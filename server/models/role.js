@@ -1,24 +1,22 @@
-export default (sequelize, DataTypes) => {
-  const Role = sequelize.define(
-    "Role",
-    {
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: { args: true, msg: "Role already exist" },
-        validate: { notEmpty: { args: true, msg: "Name cannot be empty" } },
+import mongoose from "mongoose";
+
+const RoleSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Role name is required"],
+      unique: true,
+      trim: true,
+      validate: {
+        validator: (v) => v.trim().length > 0,
+        message: "Name cannot be empty",
       },
     },
-    {
-      classMethods: {
-        associate: (models) => {
-          Role.hasMany(models.User, {
-            foreignKey: "roleId",
-            as: "users",
-          });
-        },
-      },
-    },
-  );
-  return Role;
-};
+  },
+  {
+    timestamps: true,
+  },
+);
+
+const Role = mongoose.model("Role", RoleSchema);
+export default Role;

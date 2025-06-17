@@ -1,4 +1,5 @@
-import models from "../models/index.js";
+import User from "../models/user.js";
+import Document from "../models/document.js";
 import Authenticator from "../helpers/Authenticator.js";
 import handleError from "../helpers/handleError.js";
 import paginate from "../helpers/paginate.js";
@@ -7,194 +8,173 @@ const UserController = {
   /**
    * Get users
    * Route: GET: /users or GET: /users/?limit=[integer]&offset=[integer]&q=[username]
-   *
-   * @param {Object} req request object
-   * @param {Object} res response object
-   * @returns {Response} response object
    */
-  getUsers(req, res) {
-    let searchKey = "%%";
-    if (req.query.q) searchKey = `%${req.query.q}%`;
+  async getUsers(req, res) {
+    try {
+      const searchKey = req.query.q || "";
+      const offset = Number(req.query.offset) || 0;
+      const limit = Number(req.query.limit) || 20;
 
-    const offset = Number(req.query.offset) || 0;
-    const limit = Number(req.query.limit) || 20;
+      const query = {
+        username: { $regex: searchKey, $options: "i" },
+      };
 
-    return models.User.findAndCount({
-      offset,
-      limit,
-      attributes: ["id", "username", "fullName", "email", "roleId", "about"],
-      where: {
-        username: {
-          $iLike: searchKey,
-        },
-      },
-      order: [["createdAt", "DESC"]],
-    })
-      .then((users) => {
-        const response = {
-          rows: users.rows,
-          metaData: paginate(users.count, limit, offset),
-        };
+      const total = await User.countDocuments(query);
+      const users = await User.find(
+        query,
+        "id username fullName email roleId about",
+      )
+        .sort({ createdAt: -1 })
+        .skip(offset)
+        .limit(limit);
 
-        return res.status(200).send(response);
-      })
-      .catch((error) => handleError(error, res));
+      const response = {
+        rows: users,
+        metaData: paginate(total, limit, offset),
+      };
+
+      res.status(200).send(response);
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 
   /**
    * Create a user
    * Route: POST: /users
-   *
-   * @param {Object} req request object
-   * @param {Object} res response object
-   * @returns {Response} response object
    */
-  create(req, res) {
-    if (req.body.roleId === "1") {
-      return res.status(401).send({ message: "Invalid roleId" });
-    }
+  async create(req, res) {
+    try {
+      if (req.body.roleId === "1") {
+        return res.status(401).send({ message: "Invalid roleId" });
+      }
 
-    return models.User.create(req.body)
-      .then((user) => {
-        const token = Authenticator.generateToken({
-          id: user.id,
-          username: user.username,
-          roleId: user.roleId,
-        });
-        const response = Authenticator.secureUserDetails(user);
-        response.message = "User created";
-        response.token = token;
-        return res.status(201).send(response);
-      })
-      .catch((error) => handleError(error, res));
+      const user = new User(req.body);
+      await user.save();
+
+      const token = Authenticator.generateToken({
+        id: user._id,
+        username: user.username,
+        roleId: user.roleId,
+      });
+
+      const response = Authenticator.secureUserDetails(user);
+      response.message = "User created";
+      response.token = token;
+
+      res.status(201).send(response);
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 
   /**
    * Get a user
    * Route: GET: /users/:id
-   *
-   * @param {Object} req request object
-   * @param {Object} res response object
-   * @returns {Response} response object
    */
-  getUser(req, res) {
-    return models.User.findById(req.params.id)
-      .then((user) => {
-        if (!user) return res.status(404).send({ message: "User not found" });
+  async getUser(req, res) {
+    try {
+      const user = await User.findById(req.params.id);
+      if (!user) return res.status(404).send({ message: "User not found" });
 
-        res.status(200).send(Authenticator.secureUserDetails(user));
-      })
-      .catch((error) => handleError(error, res));
+      res.status(200).send(Authenticator.secureUserDetails(user));
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 
   /**
    * Update a user
    * Route: PUT: /users/:id
-   *
-   * @param {Object} req request object
-   * @param {Object} res response object
-   * @returns {Response} response object
    */
-  update(req, res) {
-    if (req.body.roleId === "1" && res.locals.decoded.roleId !== 1) {
-      return res.status(403).send({
-        message: "Only an admin can upgrade a user to an admin role",
-      });
-    }
+  async update(req, res) {
+    try {
+      if (req.body.roleId === "1" && res.locals.decoded.roleId !== 1) {
+        return res.status(403).send({
+          message: "Only an admin can upgrade a user to an admin role",
+        });
+      }
 
-    return res.locals.user
-      .update(req.body, { fields: Object.keys(req.body) })
-      .then((updatedUser) =>
-        res.status(200).send(Authenticator.secureUserDetails(updatedUser)),
-      )
-      .catch((error) => handleError(error, res));
+      const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true,
+      });
+
+      if (!user) return res.status(404).send({ message: "User not found" });
+
+      res.status(200).send(Authenticator.secureUserDetails(user));
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 
   /**
    * Delete a user
    * Route: DELETE: /users/:id
-   *
-   * @param {Object} req request object
-   * @param {Object} res response object
-   * @returns {Response} response object
    */
-  delete(req, res) {
-    if (res.locals.decoded.id !== res.locals.user.id) {
-      return res.status(403).send({ message: "Access denied" });
-    }
+  async delete(req, res) {
+    try {
+      if (res.locals.decoded.id !== req.params.id) {
+        return res.status(403).send({ message: "Access denied" });
+      }
 
-    return res.locals.user
-      .destroy()
-      .then(() => res.status(200).send({ message: "User deleted" }));
+      const user = await User.findByIdAndDelete(req.params.id);
+      if (!user) return res.status(404).send({ message: "User not found" });
+
+      res.status(200).send({ message: "User deleted" });
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 
   /**
    * Get a user's documents
    * Route: GET: /users/:id/documents
-   *
-   * @param {Object} req request object
-   * @param {Object} res response object
-   * @returns {Response} response object
    */
-  getUserDocuments(req, res) {
-    return models.Document.findAll({
-      where: { authorId: res.locals.user.id },
-      include: [
-        {
-          model: models.User,
-          attributes: ["username", "roleId"],
-        },
-      ],
-    })
-      .then((documents) => {
-        res.status(200).send(documents);
-      })
-      .catch((error) => handleError(error, res));
+  async getUserDocuments(req, res) {
+    try {
+      const documents = await Document.find({
+        authorId: req.params.id,
+      }).populate("authorId", "username roleId");
+
+      res.status(200).send(documents);
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 
   /**
    * Login a user
    * Route: POST: /users/login
-   *
-   * @param {Object} req request object
-   * @param {Object} res response object
-   * @returns {Response} response object
    */
-  login(req, res) {
-    return models.User.findOne({
-      where: {
-        username: req.body.username,
-      },
-    })
-      .then((user) => {
-        if (user && user.verifyPassword(req.body.password)) {
-          const token = Authenticator.generateToken({
-            id: user.id,
-            username: user.username,
-            roleId: user.roleId,
-          });
+  async login(req, res) {
+    try {
+      const user = await User.findOne({ username: req.body.username });
+      if (!user || !(await user.verifyPassword(req.body.password))) {
+        return res.status(401).send({ message: "Wrong password or username" });
+      }
 
-          res.status(200).send({
-            token,
-            message: "Login successful",
-          });
-        } else {
-          res.status(401).send({ message: "Wrong password or username" });
-        }
-      })
-      .catch((error) => handleError(error, res));
+      const token = Authenticator.generateToken({
+        id: user._id,
+        username: user.username,
+        roleId: user.roleId,
+      });
+
+      res.status(200).send({
+        token,
+        message: "Login successful",
+      });
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 
   /**
    * Logout a user
    * Route: POST: /users/login
-   *
-   * @param {Object} req request object
-   * @param {Object} res response object
-   * @returns {Response} response object
    */
   logout(req, res) {
-    return res.status(200).send({
+    res.status(200).send({
       message: "Success, delete user token on the client",
     });
   },

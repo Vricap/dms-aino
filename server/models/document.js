@@ -1,44 +1,107 @@
-export default (sequelize, DataTypes) => {
-  const Document = sequelize.define(
-    "Document",
-    {
-      title: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: { args: true, msg: "Title already exist" },
-        validate: { notEmpty: { args: true, msg: "Title cannot be empty" } },
-      },
-      content: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-        validate: { notEmpty: { args: true, msg: "Content cannot be empty" } },
-      },
-      access: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        defaultValue: "public",
-        validate: {
-          isIn: {
-            args: [["public", "private", "role"]],
-            msg: "Use a valid access type",
-          },
-        },
-      },
-      authorId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+import mongoose from "mongoose";
+
+const DocumentSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: [true, "Title is required"],
+      unique: true,
+      trim: true,
+    },
+    content: {
+      type: String,
+      required: [true, "Content is required"],
+      trim: true,
+    },
+    division: {
+      type: String,
+      required: [true, "Division is required"],
+      trim: true,
+      enum: {
+        values: ["MKT", "FIN", "CHC", "PROD", "OPS", "ITINFRA", "LGL", "DIR"],
+        message: "Use valid division type",
       },
     },
-    {
-      classMethods: {
-        associate(models) {
-          Document.belongsTo(models.User, {
-            foreignKey: "authorId",
-            onDelete: "SET NULL",
-          });
-        },
+    type: {
+      type: String,
+      required: [true, "Document type is required"],
+      trim: true,
+      enum: {
+        values: [
+          "ADD",
+          "BA",
+          "SKU",
+          "JO",
+          "KK",
+          "KW",
+          "MOM",
+          "MOU",
+          "NC",
+          "ND",
+          "PENG",
+          "PEM",
+          "PB",
+          "PM",
+          "PN",
+          "NDA",
+          "PKS",
+          "PR",
+          "PNW",
+          "PO",
+          "PT",
+          "SK",
+          "SKT",
+          "SP",
+          "SPI",
+          "SPK",
+          "SPR",
+          "SR",
+          "SE",
+          "PNG",
+          "SERT",
+          "TAG",
+          "U",
+          "ST",
+          "PQ",
+          "PJ",
+          "CL",
+        ],
+        message: "Use valid document type",
       },
     },
-  );
-  return Document;
-};
+    access: {
+      type: String,
+      required: [true, "Access type is required"],
+      enum: {
+        values: ["public", "private", "role"],
+        message: "Use a valid access type",
+      },
+      default: "public",
+    },
+    uploader: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Author ID is required"],
+    },
+    status: {
+      type: String,
+      required: [true, "Status is required"],
+      enum: {
+        values: ["saved", "sent", "complete"],
+        message: "Status in invalid",
+      },
+    },
+    receiver: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+  },
+  {
+    timestamps: true, // Optional: adds createdAt and updatedAt fields
+  },
+);
+
+const Document = mongoose.model("Document", DocumentSchema);
+export default Document;
