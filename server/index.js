@@ -35,8 +35,8 @@ app.use(compression());
   try {
     const mongoURI = process.env.DATABASE_URL;
     await mongoose.connect(mongoURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+      // useNewUrlParser: true,
+      // useUnifiedTopology: true,
     });
     console.log("MongoDB Connected");
   } catch (error) {

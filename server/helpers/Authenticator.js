@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
-import models from "../models/index.js";
+import user from "../models/user.js";
+import document from "../models/document.js";
 import handleError from "../helpers/handleError.js";
 
 const secret = process.env.SECRET || "winter is coming";
@@ -83,7 +84,8 @@ const Authenticator = {
    * @returns {Response} response object
    */
   permitOwnerOrAdmin(req, res, next) {
-    return models.User.findById(req.params.id)
+    return user
+      .findById(req.params.id)
       .then((user) => {
         if (!user) return res.status(404).send({ message: "User not found" });
 
@@ -109,7 +111,8 @@ const Authenticator = {
    * @returns {Response} response object
    */
   permitAuthor(req, res, next) {
-    return models.Document.findById(req.params.id)
+    return document
+      .findById(req.params.id)
       .then((document) => {
         if (!document) {
           return res.status(404).send({ message: "Document not found" });

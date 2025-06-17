@@ -15,7 +15,7 @@ export default (app) => {
     "/roles/:id",
     Authenticator.verifyUser,
     Authenticator.permitAdmin,
-    RoleController.upadte,
+    RoleController.update,
   );
   app.delete(
     "/roles/:id",

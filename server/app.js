@@ -1,11 +1,11 @@
 import express from "express";
 import bodyParser from "body-parser";
-// import routes from "./routes/index.js";
+import routes from "./routes/index.js";
 
 const app = express();
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false })); // parse form data
 
-// routes(app);
+routes(app);
 
 export default app;

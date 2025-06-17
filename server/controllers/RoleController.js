@@ -1,97 +1,90 @@
-import models from "../models/index.js";
+import Role from "../models/role.js";
 import handleError from "../helpers/handleError.js";
 
 const RoleController = {
   /**
-   * Get roles
-   * Route: GET: /roles or GET: /roles
-   *
-   * @param {Object} req request object
-   * @param {Object} res response object
-   * @returns {Response} response object
+   * Get all roles
+   * Route: GET /roles
    */
-  getRoles(req, res) {
-    return models.Role.findAll({
-      attributes: ["id", "name"],
-      order: [["id", "ASC"]],
-    })
-      .then((roles) => res.status(200).send(roles))
-      .catch((error) => handleError(error, res));
+  async getRoles(req, res) {
+    try {
+      const roles = await Role.find({}, "_id name").sort({ _id: 1 });
+      res.status(200).send(roles);
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 
   /**
    * Create a role
-   * Route: POST: /roles
-   *
-   * @param {Object} req request object
-   * @param {Object} res response object
-   * @returns {Response} response object
+   * Route: POST /roles
    */
-  create(req, res) {
-    return models.Role.create(req.body)
-      .then((role) =>
-        res.status(201).send({
-          id: role.id,
-          name: role.name,
-          message: "Role created",
-        }),
-      )
-      .catch((error) => handleError(error, res));
+  async create(req, res) {
+    try {
+      const role = new Role(req.body);
+      await role.save();
+      res.status(201).send({
+        id: role._id,
+        name: role.name,
+        message: "Role created",
+      });
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 
-  getRole(req, res) {
-    return models.Role.findById(req.params.id)
-      .then((role) => {
-        if (!role) return res.status(404).send({ message: "Role not found" });
+  /**
+   * Get a single role by ID
+   * Route: GET /roles/:id
+   */
+  async getRole(req, res) {
+    try {
+      const role = await Role.findById(req.params.id);
+      if (!role) return res.status(404).send({ message: "Role not found" });
 
-        res.status(200).send({ id: role.id, name: role.name });
-      })
-      .catch((error) => handleError(error, res));
+      res.status(200).send({ id: role._id, name: role.name });
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 
   /**
    * Update a role
-   * Route: PUT: /roles/:id
-   *
-   * @param {Object} req request object
-   * @param {Object} res response object
-   * @returns {Response} response object
+   * Route: PUT /roles/:id
    */
-  upadte(req, res) {
-    return models.Role.findById(req.params.id)
-      .then((role) => {
-        if (!role) return res.status(404).send({ message: "Role not found" });
+  async update(req, res) {
+    try {
+      const updatedRole = await Role.findByIdAndUpdate(
+        req.params.id,
+        { $set: req.body },
+        { new: true, runValidators: true },
+      );
 
-        role
-          .update(req.body)
-          .then((updatedRole) =>
-            res
-              .status(200)
-              .send({ id: updatedRole.id, name: updatedRole.name }),
-          )
-          .catch((error) => handleError(error, res));
-      })
-      .catch((error) => handleError(error, res));
+      if (!updatedRole)
+        return res.status(404).send({ message: "Role not found" });
+
+      res.status(200).send({
+        id: updatedRole._id,
+        name: updatedRole.name,
+      });
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 
   /**
    * Delete a role
-   * Route: DELETE: /roles/:id
-   *
-   * @param {Object} req request object
-   * @param {Object} res response object
-   * @returns {Response} response object
+   * Route: DELETE /roles/:id
    */
-  delete(req, res) {
-    return models.Role.findById(req.params.id)
-      .then((role) => {
-        if (!role) return res.status(404).send({ message: "Role not found" });
+  async delete(req, res) {
+    try {
+      const role = await Role.findByIdAndDelete(req.params.id);
+      if (!role) return res.status(404).send({ message: "Role not found" });
 
-        role
-          .destroy(req.body)
-          .then(() => res.status(200).send({ message: "Role deleted" }));
-      })
-      .catch((error) => handleError(error, res));
+      res.status(200).send({ message: "Role deleted" });
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 };
 
