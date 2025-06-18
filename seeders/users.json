@@ -1,0 +1,50 @@
+[
+  {
+    "username": "vrica",
+    "email": "vrica@gmail.com",
+    "password": "123",
+    "roleId": "6852757fb711556226894b97"
+  },
+  {
+    "username": "monzo",
+    "email": "monzo@gmail.com",
+    "password": "123",
+    "roleId": "6852757fb711556226894b97"
+  },
+  {
+    "username": "rusdi",
+    "email": "rusdi@gmail.com",
+    "password": "123",
+    "roleId": "6852757fb711556226894b96"
+  },
+  {
+    "username": "fuad",
+    "email": "fuad@gmail.com",
+    "password": "123",
+    "roleId": "6852757fb711556226894b96"
+  },
+  {
+    "username": "siimut",
+    "email": "siimut@gmail.com",
+    "password": "123",
+    "roleId": "6852757fb711556226894b96"
+  },
+  {
+    "username": "farhan",
+    "email": "farhan@gmail.com",
+    "password": "123",
+    "roleId": "6852757fb711556226894b96"
+  },
+  {
+    "username": "amba",
+    "email": "amba@gmail.com",
+    "password": "123",
+    "roleId": "6852757fb711556226894b96"
+  },
+  {
+    "username": "tukam",
+    "email": "tukam@gmail.com",
+    "password": "123",
+    "roleId": "6852757fb711556226894b96"
+  }
+]

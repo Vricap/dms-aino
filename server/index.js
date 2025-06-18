@@ -34,11 +34,13 @@ app.use(compression());
 (async () => {
   try {
     const mongoURI = process.env.DATABASE_URL;
-    await mongoose.connect(mongoURI, {
-      // useNewUrlParser: true,
-      // useUnifiedTopology: true,
-    });
+    await mongoose.connect(mongoURI);
     console.log("MongoDB Connected");
+
+    // MongoDB does not automatically remove old indexes just because you updated or removed a field in your schema.
+    // const indexes = await mongoose.connection.collection("documents").indexes();
+    // console.log(indexes);
+    // await Document.syncIndexes(); // this drops any indexes not defined in the current schema
   } catch (error) {
     console.error("MongoDB Connection Error:", error);
     process.exit(1);

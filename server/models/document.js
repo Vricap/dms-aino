@@ -72,11 +72,11 @@ const DocumentSchema = new mongoose.Schema(
     access: {
       type: String,
       required: [true, "Access type is required"],
+      default: "public",
       enum: {
-        values: ["public", "private", "role"],
+        values: ["public", "private"],
         message: "Use a valid access type",
       },
-      default: "public",
     },
     uploader: {
       type: mongoose.Schema.Types.ObjectId,

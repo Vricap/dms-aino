@@ -1,0 +1,152 @@
+[
+  {
+    "title": "Marketing Budget 2025",
+    "content": "Detailed breakdown of marketing expenses for 2025.",
+    "division": "MKT",
+    "type": "PR",
+    "access": "public",
+    "uploader": "68527ed97054107abffff035",
+    "status": "sent",
+    "receiver": ["68527ed97054107abffff037", "68527ed97054107abffff03b"]
+  },
+  {
+    "title": "Financial Statement Q1",
+    "content": "Q1 financial report for internal audit.",
+    "division": "FIN",
+    "type": "BA",
+    "access": "private",
+    "uploader": "68527ed97054107abffff038",
+    "status": "saved",
+    "receiver": []
+  },
+  {
+    "title": "Production Agreement PT XYZ",
+    "content": "Partnership document with PT XYZ for product assembly.",
+    "division": "PROD",
+    "type": "PKS",
+    "access": "public",
+    "uploader": "68527ed97054107abffff039",
+    "status": "complete",
+    "receiver": ["68527ed97054107abffff03c"]
+  },
+  {
+    "title": "Ops Weekly Report",
+    "content": "Operations summary for the last 7 days.",
+    "division": "OPS",
+    "type": "MOM",
+    "access": "public",
+    "uploader": "68527ed97054107abffff03a",
+    "status": "sent",
+    "receiver": ["68527ed97054107abffff03b"]
+  },
+  {
+    "title": "IT Infrastructure Upgrade Proposal",
+    "content": "Proposal for upgrading core IT infrastructure components.",
+    "division": "ITINFRA",
+    "type": "PR",
+    "access": "private",
+    "uploader": "68527ed97054107abffff03b",
+    "status": "saved",
+    "receiver": []
+  },
+  {
+    "title": "Legal Letter to Client ABC",
+    "content": "Clarification letter sent to Client ABC on policy terms.",
+    "division": "LGL",
+    "type": "ND",
+    "access": "public",
+    "uploader": "68527ed97054107abffff037",
+    "status": "sent",
+    "receiver": ["68527ed97054107abffff036"]
+  },
+  {
+    "title": "Director Instruction No. 04",
+    "content": "Guideline for cross-divisional collaboration.",
+    "division": "DIR",
+    "type": "SK",
+    "access": "public",
+    "uploader": "68527ed97054107abffff036",
+    "status": "complete",
+    "receiver": ["68527ed97054107abffff03c"]
+  },
+  {
+    "title": "Confidential NDA for Partner Alpha",
+    "content": "NDA agreement signed with Partner Alpha.",
+    "division": "LGL",
+    "type": "NDA",
+    "access": "private",
+    "uploader": "68527ed97054107abffff03c",
+    "status": "saved",
+    "receiver": ["68527ed97054107abffff035"]
+  },
+  {
+    "title": "Market Survey Result - Product Y",
+    "content": "Survey analysis on consumer feedback.",
+    "division": "MKT",
+    "type": "SE",
+    "access": "public",
+    "uploader": "68527ed97054107abffff035",
+    "status": "sent",
+    "receiver": []
+  },
+  {
+    "title": "IT Audit Checklist",
+    "content": "Items for internal IT compliance review.",
+    "division": "ITINFRA",
+    "type": "SPI",
+    "access": "private",
+    "uploader": "68527ed97054107abffff03a",
+    "status": "complete",
+    "receiver": ["68527ed97054107abffff037"]
+  },
+  {
+    "title": "Customer Complaint SOP",
+    "content": "New standard procedure for handling complaints.",
+    "division": "OPS",
+    "type": "SKT",
+    "access": "public",
+    "uploader": "68527ed97054107abffff038",
+    "status": "saved",
+    "receiver": []
+  },
+  {
+    "title": "Legal Draft Agreement B2B",
+    "content": "Draft for upcoming B2B partnership.",
+    "division": "LGL",
+    "type": "PKS",
+    "access": "private",
+    "uploader": "68527ed97054107abffff03b",
+    "status": "sent",
+    "receiver": ["68527ed97054107abffff036", "68527ed97054107abffff03c"]
+  },
+  {
+    "title": "Finance Procurement Justification",
+    "content": "Budget approval notes for procurement team.",
+    "division": "FIN",
+    "type": "PEM",
+    "access": "public",
+    "uploader": "68527ed97054107abffff036",
+    "status": "complete",
+    "receiver": []
+  },
+  {
+    "title": "IT Cloud Policy v2",
+    "content": "Updated policies for using cloud infrastructure.",
+    "division": "ITINFRA",
+    "type": "ST",
+    "access": "private",
+    "uploader": "68527ed97054107abffff03c",
+    "status": "sent",
+    "receiver": ["68527ed97054107abffff039"]
+  },
+  {
+    "title": "Director's Monthly Note",
+    "content": "Reflection and announcement from the director.",
+    "division": "DIR",
+    "type": "ND",
+    "access": "public",
+    "uploader": "68527ed97054107abffff037",
+    "status": "saved",
+    "receiver": []
+  }
+]
