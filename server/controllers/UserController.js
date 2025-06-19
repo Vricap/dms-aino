@@ -134,8 +134,8 @@ const UserController = {
   async getUserDocuments(req, res) {
     try {
       const documents = await Document.find({
-        authorId: req.params.id,
-      }).populate("authorId", "username roleId");
+        uploader: req.params.id,
+      }).populate("uploader", "username roleId");
 
       res.status(200).send(documents);
     } catch (error) {

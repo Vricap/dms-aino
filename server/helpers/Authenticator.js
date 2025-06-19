@@ -1,11 +1,16 @@
 import jwt from "jsonwebtoken";
 import user from "../models/user.js";
+import role from "../models/role.js";
 import document from "../models/document.js";
 import handleError from "../helpers/handleError.js";
 
 const secret = process.env.SECRET || "winter is coming";
 
 const Authenticator = {
+  async isAdmin(id) {
+    const r = await role.findOne({ _id: id });
+    return r.name == "admin";
+  },
   /**
    * Generate a token
    *
@@ -35,7 +40,6 @@ const Authenticator = {
         if (err) {
           return res.status(403).send({ message: "Authentication failed" });
         }
-
         res.locals.decoded = decoded;
         return next();
       });
@@ -67,12 +71,14 @@ const Authenticator = {
    * @param {Function} next next function
    * @returns {Response} response object
    */
-  permitAdmin(req, res, next) {
-    if (res.locals.decoded.roleId === 1) {
-      return next();
+  async permitAdmin(req, res, next) {
+    try {
+      const isAdmin = await Authenticator.isAdmin(res.locals.decoded.roleId);
+      if (isAdmin) return next();
+      return res.status(403).send({ message: "Access denied" });
+    } catch (err) {
+      handleError(err, res);
     }
-
-    return res.status(403).send({ message: "Access denied" });
   },
 
   /**
@@ -83,23 +89,25 @@ const Authenticator = {
    * @param {Function} next next function
    * @returns {Response} response object
    */
-  permitOwnerOrAdmin(req, res, next) {
-    return user
-      .findById(req.params.id)
-      .then((user) => {
-        if (!user) return res.status(404).send({ message: "User not found" });
+  async permitOwnerOrAdmin(req, res, next) {
+    try {
+      const usr = await user.findById(req.params.id);
+      if (!usr) {
+        return res.status(404).send({ message: "User not found" });
+      }
 
-        if (
-          res.locals.decoded.roleId !== 1 &&
-          res.locals.decoded.id !== user.id
-        ) {
-          return res.status(403).send({ message: "Access denied" });
-        }
+      const isAdmin = await Authenticator.isAdmin(res.locals.decoded.roleId);
+      const isOwner = res.locals.decoded.id === usr.id;
 
-        res.locals.user = user;
+      if (isAdmin || isOwner) {
+        res.locals.user = usr;
         return next();
-      })
-      .catch((error) => handleError(error, res));
+      }
+
+      return res.status(403).send({ message: "Access denied" });
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 
   /**
@@ -118,7 +126,7 @@ const Authenticator = {
           return res.status(404).send({ message: "Document not found" });
         }
 
-        if (res.locals.decoded.id !== document.authorId) {
+        if (res.locals.decoded.id !== document.uploader) {
           return res.status(403).send({ message: "Access denied" });
         }
 

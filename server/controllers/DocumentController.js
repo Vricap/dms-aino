@@ -24,42 +24,39 @@ const DocumentController = {
       };
 
       if (decoded) {
-        if (decoded.roleId !== 1) {
-          query.$or = [
-            { access: { $in: ["public", "role"] } },
-            { authorId: decoded.id },
-          ];
+        if (!(await Authenticator.isAdmin(decoded.roleId))) {
+          query.uploader = decoded.id;
         }
       } else {
-        query.access = "public";
+        throw new Error("User is unknown!");
       }
 
       const total = await Document.countDocuments(query);
       const documents = await Document.find(query)
-        .populate("authorId", "username roleId")
+        .populate("uploader", "username roleId")
         .sort({ createdAt: -1 })
         .skip(offset)
         .limit(limit);
 
       // Filter role-based docs if not admin
-      let filteredDocs = documents;
+      // let filteredDocs = documents;
       let removed = 0;
 
-      if (decoded && decoded.roleId !== 1) {
-        filteredDocs = documents.filter((doc) => {
-          if (
-            doc.access !== "role" ||
-            (doc.access === "role" && doc.authorId.roleId === decoded.roleId)
-          ) {
-            return true;
-          }
-          removed++;
-          return false;
-        });
-      }
+      // if (decoded && decoded.roleId !== 1) {
+      //   filteredDocs = documents.filter((doc) => {
+      //     if (
+      //       doc.access !== "role" ||
+      //       (doc.access === "role" && doc.uploader.roleId === decoded.roleId)
+      //     ) {
+      //       return true;
+      //     }
+      //     removed++;
+      //     return false;
+      //   });
+      // }
 
       res.status(200).send({
-        rows: filteredDocs,
+        rows: documents,
         metaData: paginate(total - removed, limit, offset),
       });
     } catch (error) {
@@ -76,7 +73,7 @@ const DocumentController = {
       const user = await User.findById(res.locals.decoded.id);
       if (!user) return res.status(404).send({ message: "User not found" });
 
-      req.body.authorId = user._id;
+      req.body.uploader = user._id;
       const document = new Document(req.body);
       await document.save();
 
@@ -85,7 +82,7 @@ const DocumentController = {
         title: document.title,
         content: document.content,
         access: document.access,
-        authorId: document.authorId,
+        uploader: document.uploader,
         createdAt: document.createdAt,
         User: { username: user.username, roleId: user.roleId },
         message: "Document created",
@@ -102,7 +99,7 @@ const DocumentController = {
   async getDocument(req, res) {
     try {
       const document = await Document.findById(req.params.id).populate(
-        "authorId",
+        "uploader",
         "username roleId",
       );
 
@@ -120,8 +117,8 @@ const DocumentController = {
         document.access === "public" ||
         userRoleId === 1 ||
         (document.access === "role" &&
-          userRoleId === document.authorId.roleId) ||
-        userId === String(document.authorId._id);
+          userRoleId === document.uploader.roleId) ||
+        userId === String(document.uploader._id);
 
       if (!canAccess) {
         return res.status(403).send({ message: "Access denied" });
@@ -143,7 +140,7 @@ const DocumentController = {
         req.params.id,
         req.body,
         { new: true, runValidators: true },
-      ).populate("authorId", "username roleId");
+      ).populate("uploader", "username roleId");
 
       if (!document)
         return res.status(404).send({ message: "Document not found" });
