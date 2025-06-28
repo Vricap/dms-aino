@@ -2,10 +2,18 @@ import DocumentController from "../controllers/DocumentController.js";
 import Authenticator from "../helpers/Authenticator.js";
 
 export default (app) => {
-  app.get("/documents", DocumentController.getDocuments);
+  app.get(
+    "/documents",
+    Authenticator.verifyUser,
+    DocumentController.getDocuments,
+  );
   app.post("/documents", Authenticator.verifyUser, DocumentController.create);
 
-  app.get("/documents/:id", DocumentController.getDocument);
+  app.get(
+    "/documents/:id",
+    Authenticator.verifyUser,
+    DocumentController.getDocument,
+  );
   app.put(
     "/documents/:id",
     Authenticator.verifyUser,

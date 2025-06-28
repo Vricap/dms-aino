@@ -72,6 +72,8 @@ const DocumentController = {
     try {
       const user = await User.findById(res.locals.decoded.id);
       if (!user) return res.status(404).send({ message: "User not found" });
+      if (JSON.stringify(req.body) === "{}")
+        return res.status(400).send({ message: "Body required" });
 
       req.body.uploader = user._id;
       const document = new Document(req.body);
