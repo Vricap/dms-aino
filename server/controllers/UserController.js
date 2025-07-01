@@ -1,4 +1,5 @@
 import User from "../models/user.js";
+import Role from "../models/role.js";
 import Document from "../models/document.js";
 import Authenticator from "../helpers/Authenticator.js";
 import handleError from "../helpers/handleError.js";
@@ -153,6 +154,7 @@ const UserController = {
       if (!user || !(await user.verifyPassword(req.body.password))) {
         return res.status(401).send({ message: "Wrong password or username" });
       }
+      const role = await Role.findById(user.roleId);
 
       const token = Authenticator.generateToken({
         id: user._id,
@@ -160,8 +162,12 @@ const UserController = {
         roleId: user.roleId,
       });
 
+      const userObj = user.toObject(); // convert mongoose doc to plain js object so that we could manipulate the data
+	  delete userObj.password;
+	  userObj.role = role.name;
       res.status(200).send({
         token,
+        user: userObj,
         message: "Login successful",
       });
     } catch (error) {
