@@ -7,7 +7,13 @@
     "access": "public",
     "uploader": "68527ed97054107abffff035",
     "status": "sent",
-    "receiver": ["68527ed97054107abffff037", "68527ed97054107abffff03b"]
+    "receiver": [
+      {
+        "user": "68527ed97054107abffff037",
+        "date": "2025-07-06T00:00:00.000Z"
+      },
+      { "user": "68527ed97054107abffff03b", "date": "2025-07-06T00:00:00.000Z" }
+    ]
   },
   {
     "title": "Financial Statement Q1",
@@ -27,7 +33,9 @@
     "access": "public",
     "uploader": "68527ed97054107abffff039",
     "status": "complete",
-    "receiver": ["68527ed97054107abffff03c"]
+    "receiver": [
+      { "user": "68527ed97054107abffff03c", "date": "2025-07-06T00:00:00.000Z" }
+    ]
   },
   {
     "title": "Ops Weekly Report",
@@ -37,7 +45,9 @@
     "access": "public",
     "uploader": "68527ed97054107abffff03a",
     "status": "sent",
-    "receiver": ["68527ed97054107abffff03b"]
+    "receiver": [
+      { "user": "68527ed97054107abffff03b", "date": "2025-07-06T00:00:00.000Z" }
+    ]
   },
   {
     "title": "IT Infrastructure Upgrade Proposal",
@@ -57,7 +67,9 @@
     "access": "public",
     "uploader": "68527ed97054107abffff037",
     "status": "sent",
-    "receiver": ["68527ed97054107abffff036"]
+    "receiver": [
+      { "user": "68527ed97054107abffff036", "date": "2025-07-06T00:00:00.000Z" }
+    ]
   },
   {
     "title": "Director Instruction No. 04",
@@ -67,7 +79,9 @@
     "access": "public",
     "uploader": "68527ed97054107abffff036",
     "status": "complete",
-    "receiver": ["68527ed97054107abffff03c"]
+    "receiver": [
+      { "user": "68527ed97054107abffff03c", "date": "2025-07-06T00:00:00.000Z" }
+    ]
   },
   {
     "title": "Confidential NDA for Partner Alpha",
@@ -77,7 +91,9 @@
     "access": "private",
     "uploader": "68527ed97054107abffff03c",
     "status": "saved",
-    "receiver": ["68527ed97054107abffff035"]
+    "receiver": [
+      { "user": "68527ed97054107abffff035", "date": "2025-07-06T00:00:00.000Z" }
+    ]
   },
   {
     "title": "Market Survey Result - Product Y",
@@ -97,7 +113,9 @@
     "access": "private",
     "uploader": "68527ed97054107abffff03a",
     "status": "complete",
-    "receiver": ["68527ed97054107abffff037"]
+    "receiver": [
+      { "user": "68527ed97054107abffff037", "date": "2025-07-06T00:00:00.000Z" }
+    ]
   },
   {
     "title": "Customer Complaint SOP",
@@ -117,7 +135,13 @@
     "access": "private",
     "uploader": "68527ed97054107abffff03b",
     "status": "sent",
-    "receiver": ["68527ed97054107abffff036", "68527ed97054107abffff03c"]
+    "receiver": [
+      {
+        "user": "68527ed97054107abffff036",
+        "date": "2025-07-06T00:00:00.000Z"
+      },
+      { "user": "68527ed97054107abffff03c", "date": "2025-07-06T00:00:00.000Z" }
+    ]
   },
   {
     "title": "Finance Procurement Justification",
@@ -137,7 +161,9 @@
     "access": "private",
     "uploader": "68527ed97054107abffff03c",
     "status": "sent",
-    "receiver": ["68527ed97054107abffff039"]
+    "receiver": [
+      { "user": "68527ed97054107abffff039", "date": "2025-07-06T00:00:00.000Z" }
+    ]
   },
   {
     "title": "Director's Monthly Note",
