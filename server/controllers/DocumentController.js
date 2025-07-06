@@ -4,6 +4,12 @@ import Authenticator from "../helpers/Authenticator.js";
 import handleError from "../helpers/handleError.js";
 import paginate from "../helpers/paginate.js";
 
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const DocumentController = {
   /**
    * Get documents
@@ -72,11 +78,29 @@ const DocumentController = {
     try {
       const user = await User.findById(res.locals.decoded.id);
       if (!user) return res.status(404).send({ message: "User not found" });
-      if (JSON.stringify(req.body) === "{}")
-        return res.status(400).send({ message: "Body required" });
+      if (!req.body.title && !req.body.content)
+        return res.status(400).send({ message: "Missing required fields" });
+      if (!req.file) return res.status(400).send({ message: "Missing file" });
 
-      req.body.uploader = user._id;
-      const document = new Document(req.body);
+      // Create filename from user input
+      const extension = path.extname(req.file.originalname);
+      const type = req.body.type;
+      const division = req.body.division;
+      const fName = `${Date.now()}_${type}_${division}${extension}`;
+      const fPath = path.join(__dirname, "../../uploads/documents/");
+
+      // Save file from memory buffer
+      fs.writeFileSync(fPath + fName, req.file.buffer);
+
+      // Save metadata to DB
+      const document = new Document({
+        title: fName,
+        content: req.body.content,
+        division: req.body.division,
+        type: req.body.type,
+        uploader: user._id,
+        status: "saved",
+      });
       await document.save();
 
       res.status(201).send({
