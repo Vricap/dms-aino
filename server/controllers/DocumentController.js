@@ -89,9 +89,6 @@ const DocumentController = {
       const fName = `${Date.now()}_${type}_${division}${extension}`;
       const fPath = path.join(__dirname, "../../uploads/documents/");
 
-      // Save file from memory buffer
-      fs.writeFileSync(fPath + fName, req.file.buffer);
-
       // Save metadata to DB
       const document = new Document({
         title: fName,
@@ -102,6 +99,9 @@ const DocumentController = {
         status: "saved",
       });
       await document.save();
+
+      // Save file from memory buffer
+      fs.writeFileSync(fPath + fName, req.file.buffer);
 
       res.status(201).send({
         id: document._id,
