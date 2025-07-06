@@ -44,26 +44,27 @@ const DocumentController = {
         .skip(offset)
         .limit(limit);
 
-      // Filter role-based docs if not admin
-      // let filteredDocs = documents;
       let removed = 0;
-
-      // if (decoded && decoded.roleId !== 1) {
-      //   filteredDocs = documents.filter((doc) => {
-      //     if (
-      //       doc.access !== "role" ||
-      //       (doc.access === "role" && doc.uploader.roleId === decoded.roleId)
-      //     ) {
-      //       return true;
-      //     }
-      //     removed++;
-      //     return false;
-      //   });
-      // }
-
       res.status(200).send({
         rows: documents,
         metaData: paginate(total - removed, limit, offset),
+      });
+    } catch (error) {
+      handleError(error, res);
+    }
+  },
+
+  async getDocumentsInbox(req, res) {
+    try {
+      const token =
+        req.body.token || req.query.token || req.headers["x-access-token"];
+      const decoded = Authenticator.verifyToken(token);
+
+      if (!decoded) throw new Error("User is unknown!");
+
+      const documents = await Document.find({ "receiver.user": decoded.id });
+      res.status(200).send({
+        rows: documents,
       });
     } catch (error) {
       handleError(error, res);

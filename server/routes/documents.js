@@ -22,13 +22,17 @@ export default (app) => {
     Authenticator.verifyUser,
     DocumentController.getDocuments,
   );
+  app.get(
+    "/documents/inbox",
+    Authenticator.verifyUser,
+    DocumentController.getDocumentsInbox,
+  );
   app.post(
     "/documents",
     upload.single("file"),
     Authenticator.verifyUser,
     DocumentController.create,
   );
-
   app.get(
     "/documents/:id",
     Authenticator.verifyUser,

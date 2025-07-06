@@ -93,10 +93,18 @@ const DocumentSchema = new mongoose.Schema(
     },
     receiver: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        date: {
+          type: Date,
+        },
       },
     ],
+    dateExpired: {
+      type: Date,
+    },
   },
   {
     timestamps: true, // Optional: adds createdAt and updatedAt fields
