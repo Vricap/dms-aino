@@ -20,19 +20,24 @@ const DocumentController = {
       const searchKey = req.query.q ? req.query.q : "";
       const offset = Number(req.query.offset) || 0;
       const limit = Number(req.query.limit) || 20;
+      const status = req.query.status || "";
 
       const token =
         req.body.token || req.query.token || req.headers["x-access-token"];
       const decoded = Authenticator.verifyToken(token);
+      const isAdmin = await Authenticator.isAdmin(decoded.roleId);
 
       let query = {
         title: { $regex: searchKey, $options: "i" },
       };
+      
+      if(status) {
+        const statuses = status.split(",").map(s => s.trim()); // e.g status=saved,sent
+  		query.status = { $in: statuses };
+      }
 
       if (decoded) {
-        if (!(await Authenticator.isAdmin(decoded.roleId))) {
-          query.uploader = decoded.id;
-        }
+        if (!isAdmin) query.uploader = decoded.id; // if not admin, only show the document they upload themselve
       } else {
         throw new Error("User is unknown!");
       }

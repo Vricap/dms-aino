@@ -23,7 +23,7 @@ export default (app) => {
     DocumentController.getDocuments,
   );
   app.get(
-    "/documents/inbox",
+    "/documents/inbox", // TODO: maybe we could get the same request through /documents with query parameters
     Authenticator.verifyUser,
     DocumentController.getDocumentsInbox,
   );
