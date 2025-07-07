@@ -109,9 +109,10 @@ const DocumentController = {
         title: document.title,
         content: document.content,
         access: document.access,
+        dateExpired: document.dateExpired,
         uploader: document.uploader,
         createdAt: document.createdAt,
-        User: { username: user.username, roleId: user.roleId },
+        // User: { username: user.username, roleId: user.roleId },
         message: "Document created",
       });
     } catch (error) {

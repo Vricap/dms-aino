@@ -97,8 +97,11 @@ const DocumentSchema = new mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
         },
-        date: {
+        dateSent: {
           type: Date,
+        },
+        dateSigned: {
+   	  	  type: Date,	
         },
       },
     ],
