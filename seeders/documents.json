@@ -10,9 +10,12 @@
     "receiver": [
       {
         "user": "68527ed97054107abffff037",
-        "date": "2025-07-06T00:00:00.000Z"
+        "dateSent": "2025-07-06T00:00:00.000Z"
       },
-      { "user": "68527ed97054107abffff03b", "date": "2025-07-06T00:00:00.000Z" }
+      {
+        "user": "68527ed97054107abffff03b",
+        "dateSent": "2025-07-06T00:00:00.000Z"
+      }
     ]
   },
   {
@@ -20,7 +23,7 @@
     "content": "Q1 financial report for internal audit.",
     "division": "FIN",
     "type": "BA",
-    "access": "private",
+    "access": "public",
     "uploader": "68527ed97054107abffff038",
     "status": "saved",
     "receiver": []
@@ -34,7 +37,11 @@
     "uploader": "68527ed97054107abffff039",
     "status": "complete",
     "receiver": [
-      { "user": "68527ed97054107abffff03c", "date": "2025-07-06T00:00:00.000Z" }
+      {
+        "user": "68527ed97054107abffff03c",
+        "dateSent": "2025-07-06T00:00:00.000Z",
+        "dateSigned": "2025-07-07T00:00:00.000Z"
+      }
     ]
   },
   {
@@ -46,7 +53,10 @@
     "uploader": "68527ed97054107abffff03a",
     "status": "sent",
     "receiver": [
-      { "user": "68527ed97054107abffff03b", "date": "2025-07-06T00:00:00.000Z" }
+      {
+        "user": "68527ed97054107abffff03b",
+        "dateSent": "2025-07-06T00:00:00.000Z"
+      }
     ]
   },
   {
@@ -54,7 +64,7 @@
     "content": "Proposal for upgrading core IT infrastructure components.",
     "division": "ITINFRA",
     "type": "PR",
-    "access": "private",
+    "access": "public",
     "uploader": "68527ed97054107abffff03b",
     "status": "saved",
     "receiver": []
@@ -68,7 +78,10 @@
     "uploader": "68527ed97054107abffff037",
     "status": "sent",
     "receiver": [
-      { "user": "68527ed97054107abffff036", "date": "2025-07-06T00:00:00.000Z" }
+      {
+        "user": "68527ed97054107abffff036",
+        "dateSent": "2025-07-06T00:00:00.000Z"
+      }
     ]
   },
   {
@@ -80,7 +93,11 @@
     "uploader": "68527ed97054107abffff036",
     "status": "complete",
     "receiver": [
-      { "user": "68527ed97054107abffff03c", "date": "2025-07-06T00:00:00.000Z" }
+      {
+        "user": "68527ed97054107abffff03c",
+        "dateSent": "2025-07-06T00:00:00.000Z",
+        "dateSigned": "2025-07-07T00:00:00.000Z"
+      }
     ]
   },
   {
@@ -88,11 +105,14 @@
     "content": "NDA agreement signed with Partner Alpha.",
     "division": "LGL",
     "type": "NDA",
-    "access": "private",
+    "access": "public",
     "uploader": "68527ed97054107abffff03c",
-    "status": "saved",
+    "status": "sent",
     "receiver": [
-      { "user": "68527ed97054107abffff035", "date": "2025-07-06T00:00:00.000Z" }
+      {
+        "user": "68527ed97054107abffff035",
+        "dateSent": "2025-07-06T00:00:00.000Z"
+      }
     ]
   },
   {
@@ -102,7 +122,7 @@
     "type": "SE",
     "access": "public",
     "uploader": "68527ed97054107abffff035",
-    "status": "sent",
+    "status": "saved",
     "receiver": []
   },
   {
@@ -110,11 +130,15 @@
     "content": "Items for internal IT compliance review.",
     "division": "ITINFRA",
     "type": "SPI",
-    "access": "private",
+    "access": "public",
     "uploader": "68527ed97054107abffff03a",
     "status": "complete",
     "receiver": [
-      { "user": "68527ed97054107abffff037", "date": "2025-07-06T00:00:00.000Z" }
+      {
+        "user": "68527ed97054107abffff037",
+        "dateSent": "2025-07-06T00:00:00.000Z",
+        "dateSigned": "2025-07-07T00:00:00.000Z"
+      }
     ]
   },
   {
@@ -132,15 +156,18 @@
     "content": "Draft for upcoming B2B partnership.",
     "division": "LGL",
     "type": "PKS",
-    "access": "private",
+    "access": "public",
     "uploader": "68527ed97054107abffff03b",
     "status": "sent",
     "receiver": [
       {
         "user": "68527ed97054107abffff036",
-        "date": "2025-07-06T00:00:00.000Z"
+        "dateSent": "2025-07-06T00:00:00.000Z"
       },
-      { "user": "68527ed97054107abffff03c", "date": "2025-07-06T00:00:00.000Z" }
+      {
+        "user": "68527ed97054107abffff03c",
+        "dateSent": "2025-07-06T00:00:00.000Z"
+      }
     ]
   },
   {
@@ -150,7 +177,7 @@
     "type": "PEM",
     "access": "public",
     "uploader": "68527ed97054107abffff036",
-    "status": "complete",
+    "status": "saved",
     "receiver": []
   },
   {
@@ -158,11 +185,14 @@
     "content": "Updated policies for using cloud infrastructure.",
     "division": "ITINFRA",
     "type": "ST",
-    "access": "private",
+    "access": "public",
     "uploader": "68527ed97054107abffff03c",
     "status": "sent",
     "receiver": [
-      { "user": "68527ed97054107abffff039", "date": "2025-07-06T00:00:00.000Z" }
+      {
+        "user": "68527ed97054107abffff039",
+        "dateSent": "2025-07-06T00:00:00.000Z"
+      }
     ]
   },
   {
