@@ -15,7 +15,7 @@ function filterReceiver(id, documents) {
   for (let i = 0; i < doc.length; i++) {
     if (doc[i].receiver.length == 0) contiue;
     let arr = [];
-    for (let j = 0; j < doc[i].receiver; j++) {
+    for (let j = 0; j < doc[i].receiver.length; j++) {
       if (doc[i].receiver[j].user == id) {
         arr.push({
           user: doc[i].receiver[j].user,
@@ -91,7 +91,7 @@ const DocumentController = {
         "receiver.user": decoded.id,
         status: "sent",
       });
-
+      
       // we filter only the doc that have the user as receiver
       const doc = filterReceiver(decoded.id, documents);
       res.status(200).send({
