@@ -22,10 +22,18 @@ export default (app) => {
     Authenticator.verifyUser,
     DocumentController.getDocuments,
   );
+  // TODO: maybe we could get the same request through /documents endpoint and getDocuments contrller with query parameters.
+  // (update) absolutely NOT, inbox have some quirks that it will be more performant if we just create its own enpoint with its own controller
   app.get(
-    "/documents/inbox", // TODO: maybe we could get the same request through /documents with query parameters
+    "/documents/inbox",
     Authenticator.verifyUser,
     DocumentController.getDocumentsInbox,
+  );
+  // this too have some quirks
+  app.get(
+    "/documents/completed",
+    Authenticator.verifyUser,
+    DocumentController.getDocumentsComplete,
   );
   app.post(
     "/documents",

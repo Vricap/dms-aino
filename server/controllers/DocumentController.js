@@ -10,6 +10,25 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+function filterReceiver(id, documents) {
+  let doc = documents;
+  for (let i = 0; i < doc.length; i++) {
+    if (doc[i].receiver.length == 0) contiue;
+    let arr = [];
+    for (let j = 0; j < doc[i].receiver; j++) {
+      if (doc[i].receiver[j].user == id) {
+        arr.push({
+          user: doc[i].receiver[j].user,
+          dateSent: doc[i].receiver[j].dateSent,
+          dateSigned: doc[i].receiver[j].dateSigned,
+        });
+      }
+    }
+    doc[i].receiver = arr;
+  }
+  return doc;
+}
+
 const DocumentController = {
   /**
    * Get documents
@@ -30,10 +49,10 @@ const DocumentController = {
       let query = {
         title: { $regex: searchKey, $options: "i" },
       };
-      
-      if(status) {
-        const statuses = status.split(",").map(s => s.trim()); // e.g status=saved,sent
-  		query.status = { $in: statuses };
+
+      if (status) {
+        const statuses = status.split(",").map((s) => s.trim()); // e.g status=saved,sent
+        query.status = { $in: statuses };
       }
 
       if (decoded) {
@@ -65,11 +84,18 @@ const DocumentController = {
         req.body.token || req.query.token || req.headers["x-access-token"];
       const decoded = Authenticator.verifyToken(token);
 
-      if (!decoded) throw new Error("User is unknown!");
+      if (!decoded)
+        throw new Error("User is unknown! Please login with valid user.");
 
-      const documents = await Document.find({ "receiver.user": decoded.id });
+      const documents = await Document.find({
+        "receiver.user": decoded.id,
+        status: "sent",
+      });
+
+      // we filter only the doc that have the user as receiver
+      const doc = filterReceiver(decoded.id, documents);
       res.status(200).send({
-        rows: documents,
+        rows: doc,
       });
     } catch (error) {
       handleError(error, res);
