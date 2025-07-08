@@ -29,12 +29,6 @@ export default (app) => {
     Authenticator.verifyUser,
     DocumentController.getDocumentsInbox,
   );
-  // this too have some quirks
-  app.get(
-    "/documents/completed",
-    Authenticator.verifyUser,
-    DocumentController.getDocumentsComplete,
-  );
   app.post(
     "/documents",
     upload.single("file"),
