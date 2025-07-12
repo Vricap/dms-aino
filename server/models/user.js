@@ -39,6 +39,25 @@ const UserSchema = new mongoose.Schema(
       required: [true, "roleId is required"],
       ref: "Role",
     },
+    division: {
+      type: String,
+      required: [true, "Division is required"],
+      trim: true,
+      enum: {
+        values: [
+          "MKT",
+          "FIN",
+          "CHC",
+          "PROD",
+          "OPS",
+          "ITINFRA",
+          "LGL",
+          "DIR",
+          "ADMIN",
+        ],
+        message: "Use valid division type",
+      },
+    },
   },
   {
     timestamps: true,

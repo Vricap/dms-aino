@@ -21,10 +21,7 @@ const UserController = {
       };
 
       const total = await User.countDocuments(query);
-      const users = await User.find(
-        query,
-        "id username fullName email roleId about",
-      )
+      const users = await User.find(query, "id username email roleId division")
         .sort({ createdAt: -1 })
         .skip(offset)
         .limit(limit);
@@ -163,8 +160,8 @@ const UserController = {
       });
 
       const userObj = user.toObject(); // convert mongoose doc to plain js object so that we could manipulate the data
-	  delete userObj.password;
-	  userObj.role = role.name;
+      delete userObj.password;
+      userObj.role = role.name;
       res.status(200).send({
         token,
         user: userObj,
