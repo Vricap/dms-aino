@@ -91,7 +91,7 @@ const DocumentController = {
         "receiver.user": decoded.id,
         status: "sent",
       });
-      
+
       // we filter only the doc that have the user as receiver
       const doc = filterReceiver(decoded.id, documents);
       res.status(200).send({
@@ -117,7 +117,7 @@ const DocumentController = {
       // Create filename from user input
       const extension = path.extname(req.file.originalname);
       const type = req.body.type;
-      const division = req.body.division;
+      const division = user.division;
       const fName = `${Date.now()}_${type}_${division}${extension}`;
       const fPath = path.join(__dirname, "../../uploads/documents/");
 
@@ -125,8 +125,8 @@ const DocumentController = {
       const document = new Document({
         title: fName,
         content: req.body.content,
-        division: req.body.division,
-        type: req.body.type,
+        division: division,
+        type: type,
         uploader: user._id,
         status: "saved",
       });
@@ -140,10 +140,11 @@ const DocumentController = {
         title: document.title,
         content: document.content,
         access: document.access,
+        division: document.division,
+        type: document.type,
         dateExpired: document.dateExpired,
         uploader: document.uploader,
         createdAt: document.createdAt,
-        // User: { username: user.username, roleId: user.roleId },
         message: "Document created",
       });
     } catch (error) {
