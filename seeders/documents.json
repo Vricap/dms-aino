@@ -2,18 +2,18 @@
   {
     "title": "Marketing Budget 2025",
     "content": "Detailed breakdown of marketing expenses for 2025.",
-    "division": "MKT",
+    "division": "CHC",
     "type": "PR",
     "access": "public",
-    "uploader": "68527ed97054107abffff035",
+    "uploader": "68726471dbb8b1ded9a6f9d9",
     "status": "sent",
     "receiver": [
       {
-        "user": "68527ed97054107abffff037",
+        "user": "68726471dbb8b1ded9a6f9d3",
         "dateSent": "2025-07-06T00:00:00.000Z"
       },
       {
-        "user": "68527ed97054107abffff03b",
+        "user": "68726471dbb8b1ded9a6f9d6",
         "dateSent": "2025-07-06T00:00:00.000Z"
       }
     ]
@@ -24,7 +24,7 @@
     "division": "FIN",
     "type": "BA",
     "access": "public",
-    "uploader": "68527ed97054107abffff038",
+    "uploader": "68726471dbb8b1ded9a6f9d4",
     "status": "saved",
     "receiver": []
   },
@@ -34,11 +34,11 @@
     "division": "PROD",
     "type": "PKS",
     "access": "public",
-    "uploader": "68527ed97054107abffff039",
+    "uploader": "68726471dbb8b1ded9a6f9d8",
     "status": "complete",
     "receiver": [
       {
-        "user": "68527ed97054107abffff03c",
+        "user": "68726471dbb8b1ded9a6f9d6",
         "dateSent": "2025-07-06T00:00:00.000Z",
         "dateSigned": "2025-07-07T00:00:00.000Z"
       }
@@ -50,11 +50,11 @@
     "division": "OPS",
     "type": "MOM",
     "access": "public",
-    "uploader": "68527ed97054107abffff03a",
+    "uploader": "68726471dbb8b1ded9a6f9d7",
     "status": "sent",
     "receiver": [
       {
-        "user": "68527ed97054107abffff03b",
+        "user": "68726471dbb8b1ded9a6f9d4",
         "dateSent": "2025-07-06T00:00:00.000Z"
       }
     ]
@@ -62,10 +62,10 @@
   {
     "title": "IT Infrastructure Upgrade Proposal",
     "content": "Proposal for upgrading core IT infrastructure components.",
-    "division": "ITINFRA",
+    "division": "ADMIN",
     "type": "PR",
     "access": "public",
-    "uploader": "68527ed97054107abffff03b",
+    "uploader": "68726471dbb8b1ded9a6f9d3",
     "status": "saved",
     "receiver": []
   },
@@ -75,11 +75,11 @@
     "division": "LGL",
     "type": "ND",
     "access": "public",
-    "uploader": "68527ed97054107abffff037",
+    "uploader": "68726471dbb8b1ded9a6f9d6",
     "status": "sent",
     "receiver": [
       {
-        "user": "68527ed97054107abffff036",
+        "user": "68726471dbb8b1ded9a6f9d7",
         "dateSent": "2025-07-06T00:00:00.000Z"
       }
     ]
@@ -90,11 +90,11 @@
     "division": "DIR",
     "type": "SK",
     "access": "public",
-    "uploader": "68527ed97054107abffff036",
+    "uploader": "68726471dbb8b1ded9a6f9da",
     "status": "complete",
     "receiver": [
       {
-        "user": "68527ed97054107abffff03c",
+        "user": "68726471dbb8b1ded9a6f9d8",
         "dateSent": "2025-07-06T00:00:00.000Z",
         "dateSigned": "2025-07-07T00:00:00.000Z"
       }
@@ -106,11 +106,11 @@
     "division": "LGL",
     "type": "NDA",
     "access": "public",
-    "uploader": "68527ed97054107abffff03c",
+    "uploader": "68726471dbb8b1ded9a6f9d6",
     "status": "sent",
     "receiver": [
       {
-        "user": "68527ed97054107abffff035",
+        "user": "68726471dbb8b1ded9a6f9d9",
         "dateSent": "2025-07-06T00:00:00.000Z"
       }
     ]
@@ -118,24 +118,24 @@
   {
     "title": "Market Survey Result - Product Y",
     "content": "Survey analysis on consumer feedback.",
-    "division": "MKT",
+    "division": "CHC",
     "type": "SE",
     "access": "public",
-    "uploader": "68527ed97054107abffff035",
+    "uploader": "68726471dbb8b1ded9a6f9d9",
     "status": "saved",
     "receiver": []
   },
   {
     "title": "IT Audit Checklist",
     "content": "Items for internal IT compliance review.",
-    "division": "ITINFRA",
+    "division": "ADMIN",
     "type": "SPI",
     "access": "public",
-    "uploader": "68527ed97054107abffff03a",
+    "uploader": "68726471dbb8b1ded9a6f9d3",
     "status": "complete",
     "receiver": [
       {
-        "user": "68527ed97054107abffff037",
+        "user": "68726471dbb8b1ded9a6f9d6",
         "dateSent": "2025-07-06T00:00:00.000Z",
         "dateSigned": "2025-07-07T00:00:00.000Z"
       }
@@ -147,7 +147,7 @@
     "division": "OPS",
     "type": "SKT",
     "access": "public",
-    "uploader": "68527ed97054107abffff038",
+    "uploader": "68726471dbb8b1ded9a6f9d7",
     "status": "saved",
     "receiver": []
   },
@@ -157,15 +157,15 @@
     "division": "LGL",
     "type": "PKS",
     "access": "public",
-    "uploader": "68527ed97054107abffff03b",
+    "uploader": "68726471dbb8b1ded9a6f9d6",
     "status": "sent",
     "receiver": [
       {
-        "user": "68527ed97054107abffff036",
+        "user": "68726471dbb8b1ded9a6f9d7",
         "dateSent": "2025-07-06T00:00:00.000Z"
       },
       {
-        "user": "68527ed97054107abffff03c",
+        "user": "68726471dbb8b1ded9a6f9d8",
         "dateSent": "2025-07-06T00:00:00.000Z"
       }
     ]
@@ -176,21 +176,21 @@
     "division": "FIN",
     "type": "PEM",
     "access": "public",
-    "uploader": "68527ed97054107abffff036",
+    "uploader": "68726471dbb8b1ded9a6f9d4",
     "status": "saved",
     "receiver": []
   },
   {
     "title": "IT Cloud Policy v2",
     "content": "Updated policies for using cloud infrastructure.",
-    "division": "ITINFRA",
+    "division": "ADMIN",
     "type": "ST",
     "access": "public",
-    "uploader": "68527ed97054107abffff03c",
+    "uploader": "68726471dbb8b1ded9a6f9d3",
     "status": "sent",
     "receiver": [
       {
-        "user": "68527ed97054107abffff039",
+        "user": "68726471dbb8b1ded9a6f9d8",
         "dateSent": "2025-07-06T00:00:00.000Z"
       }
     ]
@@ -201,7 +201,7 @@
     "division": "DIR",
     "type": "ND",
     "access": "public",
-    "uploader": "68527ed97054107abffff037",
+    "uploader": "68726471dbb8b1ded9a6f9da",
     "status": "saved",
     "receiver": []
   }

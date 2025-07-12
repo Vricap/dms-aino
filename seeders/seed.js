@@ -107,6 +107,7 @@ if (process.argv[2] === "--seed-all") {
 } else if (process.argv[2] === "--seed-role") {
   importRole();
 } else if (process.argv[2] === "--seed-user") {
+  Document.syncIndexes();
   importUser();
 } else if (process.argv[2] === "--seed-document") {
   Document.syncIndexes();
