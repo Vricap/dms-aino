@@ -1,6 +1,7 @@
 import Document from "../models/document.js";
 import User from "../models/user.js";
 import Authenticator from "../helpers/Authenticator.js";
+import Counter from "../models/counter.js";
 import handleError from "../helpers/handleError.js";
 import paginate from "../helpers/paginate.js";
 
@@ -9,6 +10,22 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const romanMonths = [
+  "",
+  "I",
+  "II",
+  "III",
+  "IV",
+  "V",
+  "VI",
+  "VII",
+  "VIII",
+  "IX",
+  "X",
+  "XI",
+  "XII",
+];
 
 function filterReceiver(id, documents) {
   let doc = documents;
@@ -27,6 +44,15 @@ function filterReceiver(id, documents) {
     doc[i].receiver = arr;
   }
   return doc;
+}
+
+async function getNextCounter(name) {
+  const counter = await Counter.findOneAndUpdate(
+    { name },
+    { $inc: { value: 1 } },
+    { new: true, upsert: true },
+  );
+  return counter.value;
 }
 
 const DocumentController = {
@@ -115,10 +141,17 @@ const DocumentController = {
       if (!req.file) return res.status(400).send({ message: "Missing file" });
 
       // Create filename from user input
+      // document naming standart: 001/CHC/BA/I/2024 unisa
       const extension = path.extname(req.file.originalname);
       const type = req.body.type;
       const division = user.division;
-      const fName = `${Date.now()}_${type}_${division}${extension}`;
+      const count = await getNextCounter(division); // create a per-division counter
+      const paddedCount = String(count).padStart(3, "0");
+
+      const monthNumber = new Date().getMonth() + 1; // getMonth() is 0-based
+      const romanMonth = romanMonths[monthNumber];
+      const year = new Date().getFullYear();
+      const fName = `${paddedCount}/${division}/${type}/${romanMonth}/${year}${extension}`;
       const fPath = path.join(__dirname, "../../uploads/documents/");
 
       // Save metadata to DB
@@ -133,7 +166,7 @@ const DocumentController = {
       await document.save();
 
       // Save file from memory buffer
-      fs.writeFileSync(fPath + fName, req.file.buffer);
+      fs.writeFileSync(fPath + document._id, req.file.buffer);
 
       res.status(201).send({
         id: document._id,
