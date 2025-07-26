@@ -40,6 +40,11 @@ export default (app) => {
     Authenticator.verifyUser,
     DocumentController.getDocument,
   );
+  app.get(
+    "/documents/blob/:id",
+    Authenticator.verifyUser,
+    DocumentController.getDocumentBlob,
+  );
   app.put(
     "/documents/:id",
     Authenticator.verifyUser,

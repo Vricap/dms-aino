@@ -104,6 +104,22 @@ const DocumentController = {
     }
   },
 
+  async getDocumentBlob(req, res) {
+    try {
+      const fPath = path.join(
+        __dirname,
+        "../../uploads/documents/" + req.params.id,
+      );
+      if (!fs.existsSync(fPath)) {
+      	throw new Error("File tidak ditemukan");
+      }
+      res.type('application/pdf');
+      res.sendFile(fPath);
+    } catch (error) {
+      handleError(error, res);
+    }
+  },
+
   async getDocumentsInbox(req, res) {
     try {
       const token =
