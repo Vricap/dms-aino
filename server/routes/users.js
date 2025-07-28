@@ -6,7 +6,7 @@ export default (app) => {
   app.get(
     "/users",
     Authenticator.verifyUser,
-    Authenticator.permitAdmin,
+    // Authenticator.permitAdmin,
     UserController.getUsers,
   );
 
