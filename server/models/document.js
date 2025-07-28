@@ -103,6 +103,23 @@ const DocumentSchema = new mongoose.Schema(
     dateExpired: {
       type: Date,
     },
+    pointer: {
+   		page: {
+    		type: Number,
+    	},
+    	x: {
+    		type: Number,
+    	},
+    	y: {
+    		type: Number,
+    	},
+    	width: {
+    		type: Number,
+    	},
+    	height: {
+    		type: Number,
+    	},
+    },
   },
   {
     timestamps: true, // Optional: adds createdAt and updatedAt fields
