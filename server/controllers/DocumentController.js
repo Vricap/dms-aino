@@ -113,6 +113,11 @@ const DocumentController = {
       if (!fs.existsSync(fPath)) {
       	throw new Error("File tidak ditemukan");
       }
+      const doc = await Document.findById(req.params.id);
+      if(doc && doc.pointer) {
+     	res.setHeader('Access-Control-Expose-Headers', 'X-Meta-Info');
+      	res.set('X-Meta-Info', JSON.stringify({ message: doc.pointer }));	
+      }
       res.type('application/pdf');
       res.sendFile(fPath);
     } catch (error) {
