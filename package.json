@@ -23,6 +23,7 @@
     "morgan": "^1.10.0",
     "multer": "^2.0.1",
     "nodemon": "^3.1.10",
+    "pdf-lib": "^1.17.1",
     "react": "^19.1.0"
   },
   "devDependencies": {

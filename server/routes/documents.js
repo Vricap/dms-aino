@@ -59,4 +59,9 @@ export default (app) => {
   );
 
   app.get("/search/documents", DocumentController.getDocuments);
+  app.get(
+    "/documents/sign/:id",
+    Authenticator.verifyUser,
+    DocumentController.signDocument,
+  );
 };

@@ -5,6 +5,12 @@ import Authenticator from "../helpers/Authenticator.js";
 import handleError from "../helpers/handleError.js";
 import paginate from "../helpers/paginate.js";
 
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const UserController = {
   /**
    * Get users
@@ -180,6 +186,25 @@ const UserController = {
     res.status(200).send({
       message: "Success, delete user token on the client",
     });
+  },
+
+  async createSignature(req, res) {
+    try {
+      const user = await User.findById(res.locals.decoded.id);
+      if (!user) return res.status(404).send({ message: "User not found" });
+      if (!req.file) {
+        return res.status(400).send({ message: "Missing file" });
+      }
+
+      // const extension = path.extname(req.signature.originalname);
+      const fPath = path.join(__dirname, "../../uploads/signature/");
+      fs.writeFileSync(fPath + user._id, req.file.buffer);
+
+      res.status(201).send({ message: "success" });
+    } catch (error) {
+      console.log(error);
+      handleError(error, res);
+    }
   },
 };
 

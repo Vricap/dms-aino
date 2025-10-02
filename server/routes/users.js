@@ -1,5 +1,8 @@
+import multer from "multer";
 import UserController from "../controllers/UserController.js";
 import Authenticator from "../helpers/Authenticator.js";
+
+const upload = multer({ storage: multer.memoryStorage() }); // this don't save to disk yet
 
 export default (app) => {
   app.post("/users", UserController.create);
@@ -39,4 +42,14 @@ export default (app) => {
     Authenticator.permitAdmin,
     UserController.getUsers,
   );
+
+  app.post(
+    "/signature",
+    Authenticator.verifyUser,
+    upload.single("signature"),
+    UserController.createSignature,
+  );
+  // app.get("/signature/:id", UserController.getSignature);
+  // app.put("/signature/:id", UserController.updateSignature);
+  // app.delete("/signature/:id", UserController.deleteSignature);
 };

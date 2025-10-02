@@ -1,3 +1,5 @@
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+
 import Document from "../models/document.js";
 import User from "../models/user.js";
 import Authenticator from "../helpers/Authenticator.js";
@@ -30,7 +32,7 @@ const romanMonths = [
 function filterReceiver(id, documents) {
   let doc = documents;
   for (let i = 0; i < doc.length; i++) {
-    if (doc[i].receiver.length == 0) contiue;
+    if (doc[i].receiver.length == 0) continue;
     let arr = [];
     for (let j = 0; j < doc[i].receiver.length; j++) {
       if (doc[i].receiver[j].user == id) {
@@ -111,14 +113,14 @@ const DocumentController = {
         "../../uploads/documents/" + req.params.id,
       );
       if (!fs.existsSync(fPath)) {
-      	throw new Error("File tidak ditemukan");
+        throw new Error("File tidak ditemukan");
       }
       const doc = await Document.findById(req.params.id);
-      if(doc && doc.pointer) {
-     	res.setHeader('Access-Control-Expose-Headers', 'X-Meta-Info');
-      	res.set('X-Meta-Info', JSON.stringify({ message: doc.pointer }));	
+      if (doc && doc.pointer) {
+        res.setHeader("Access-Control-Expose-Headers", "X-Meta-Info");
+        res.set("X-Meta-Info", JSON.stringify({ message: doc.pointer }));
       }
-      res.type('application/pdf');
+      res.type("application/pdf");
       res.sendFile(fPath);
     } catch (error) {
       handleError(error, res);
@@ -278,6 +280,71 @@ const DocumentController = {
       res.status(200).send({ message: "Document deleted" });
     } catch (error) {
       handleError(error, res);
+    }
+  },
+
+  async signDocument(req, res) {
+    try {
+      const doc = await Document.findById(req.params.id);
+      if (!doc) {
+        return res.status(404).send({ message: "Document not found" });
+      }
+      const pdfPath = path.join(__dirname, `../../uploads/documents/${doc.id}`); // the pdf file location
+      if (!fs.existsSync(pdfPath))
+        return res.status(404).send({ message: "Document not found" }); // check if the pdf file exist
+      const existingPdfBytes = fs.readFileSync(pdfPath);
+      const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+      const imagePath = path.join(
+        __dirname,
+        `../../uploads/signature/${res.locals.decoded.id}`,
+      ); // the user signature image location
+      if (!fs.existsSync(imagePath))
+        return res.status(404).send({ message: "Signature not found" }); // check if the user signature image exist
+      const imageBytes = fs.readFileSync(imagePath);
+      // Detect image format by magic number
+      let image;
+      if (imageBytes[0] === 0x89 && imageBytes[1] === 0x50) {
+        // PNG
+        image = await pdfDoc.embedPng(imageBytes);
+      } else if (imageBytes[0] === 0xff && imageBytes[1] === 0xd8) {
+        // JPEG
+        image = await pdfDoc.embedJpg(imageBytes);
+      } else {
+        throw new Error("Unsupported image format (not PNG or JPEG)");
+      }
+
+      const pages = pdfDoc.getPages();
+      pages[doc.pointer.page - 1].drawImage(image, {
+        x: doc.pointer.x,
+        y: doc.pointer.y,
+        width: doc.pointer.width,
+        height: doc.pointer.height,
+      });
+
+      for (const el of doc.receiver) {
+        const id = el.user.toString();
+        if (res.locals.decoded.id == id) {
+          const pdfBytes = await pdfDoc.save();
+          fs.writeFileSync(
+            path.join(__dirname, `../../uploads/documents/${doc.id}`),
+            pdfBytes,
+          );
+          el.dateSigned = new Date();
+          doc.status = "complete";
+          doc.pointer.page = undefined;
+          doc.pointer.x = undefined;
+          doc.pointer.y = undefined;
+          doc.pointer.width = undefined;
+          doc.pointer.height = undefined;
+          await doc.save();
+          return res.status(200).send({ message: "success" });
+        }
+      }
+
+      res.status(400).send({ message: "You can't sign this document" });
+    } catch (err) {
+      handleError(err, res);
     }
   },
 };
