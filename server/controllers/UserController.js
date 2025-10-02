@@ -188,6 +188,21 @@ const UserController = {
     });
   },
 
+  async getSignature(req, res) {
+    try {
+      const imagePath = path.join(
+        __dirname,
+        `../../uploads/signature/${req.params.id}`,
+      );
+      if (!fs.existsSync(imagePath))
+        return res.status(404).send({ message: "Signature not found" });
+        
+      res.sendFile(imagePath);
+    } catch (error) {
+      handleError(error, res);
+    }
+  },
+
   async createSignature(req, res) {
     try {
       const user = await User.findById(res.locals.decoded.id);
@@ -202,7 +217,6 @@ const UserController = {
 
       res.status(201).send({ message: "success" });
     } catch (error) {
-      console.log(error);
       handleError(error, res);
     }
   },

@@ -43,6 +43,11 @@ export default (app) => {
     UserController.getUsers,
   );
 
+  app.get(
+    "/signature/:id",
+    Authenticator.verifyUser,
+    UserController.getSignature,
+  );
   app.post(
     "/signature",
     Authenticator.verifyUser,
