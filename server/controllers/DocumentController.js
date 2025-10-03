@@ -248,11 +248,9 @@ const DocumentController = {
         userId === String(document.uploader._id);
 
       if (!canAccess) {
-        return res
-          .status(403)
-          .send({
-            message: "User ini tidak diperbolehkan mengakses dokumen ini!",
-          });
+        return res.status(403).send({
+          message: "User ini tidak diperbolehkan mengakses dokumen ini!",
+        });
       }
 
       res.status(200).send(document);
@@ -312,11 +310,9 @@ const DocumentController = {
       }
       const pdfPath = path.join(__dirname, `../../uploads/documents/${doc.id}`); // the pdf file location
       if (!fs.existsSync(pdfPath))
-        return res
-          .status(404)
-          .send({
-            message: "Dokumen dengan id ini tidak ditemukan dalam file system!",
-          }); // check if the pdf file exist
+        return res.status(404).send({
+          message: "Dokumen dengan id ini tidak ditemukan dalam file system!",
+        }); // check if the pdf file exist
       const existingPdfBytes = fs.readFileSync(pdfPath);
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
@@ -327,7 +323,10 @@ const DocumentController = {
       if (!fs.existsSync(imagePath))
         return res
           .status(404)
-          .send({ message: "Gambar tanda tangan user tidak ditemukan!" }); // check if the user signature image exist
+          .send({
+            message:
+              "Gambar tanda tangan user tidak ditemukan, silahkan upload gambar tanda tanganmu terlebih dahulu di bagian profile!",
+          }); // check if the user signature image exist
       const imageBytes = fs.readFileSync(imagePath);
       // Detect image format by magic number
       let image;
