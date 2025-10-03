@@ -26,7 +26,7 @@ const RoleController = {
       res.status(201).send({
         id: role._id,
         name: role.name,
-        message: "Role created",
+        message: "Role berhasil dibuat!",
       });
     } catch (error) {
       handleError(error, res);
@@ -40,7 +40,8 @@ const RoleController = {
   async getRole(req, res) {
     try {
       const role = await Role.findById(req.params.id);
-      if (!role) return res.status(404).send({ message: "Role not found" });
+      if (!role)
+        return res.status(404).send({ message: "Role tidak ditemukan!" });
 
       res.status(200).send({ id: role._id, name: role.name });
     } catch (error) {
@@ -61,7 +62,7 @@ const RoleController = {
       );
 
       if (!updatedRole)
-        return res.status(404).send({ message: "Role not found" });
+        return res.status(404).send({ message: "Role tidak ditemukan!" });
 
       res.status(200).send({
         id: updatedRole._id,
@@ -79,9 +80,10 @@ const RoleController = {
   async delete(req, res) {
     try {
       const role = await Role.findByIdAndDelete(req.params.id);
-      if (!role) return res.status(404).send({ message: "Role not found" });
+      if (!role)
+        return res.status(404).send({ message: "Role tidak ditemukan!" });
 
-      res.status(200).send({ message: "Role deleted" });
+      res.status(200).send({ message: "Role berhasil di hapus!" });
     } catch (error) {
       handleError(error, res);
     }

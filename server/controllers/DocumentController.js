@@ -158,10 +158,19 @@ const DocumentController = {
   async create(req, res) {
     try {
       const user = await User.findById(res.locals.decoded.id);
-      if (!user) return res.status(404).send({ message: "User not found" });
+      if (!user)
+        return res.status(404).send({
+          message:
+            "User tidak diketahui. Cobalah login dengan user valid atau register.",
+        });
       if (!req.body.title && !req.body.content)
-        return res.status(400).send({ message: "Missing required fields" });
-      if (!req.file) return res.status(400).send({ message: "Missing file" });
+        return res
+          .status(400)
+          .send({ message: "Dokumen title dan konten harus ada!" });
+      if (!req.file)
+        return res
+          .status(400)
+          .send({ message: "File tidak ada. Pastikan sudah upload file nya!" });
 
       // Create filename from user input
       // document naming standart: 001/CHC/BA/I/2024 unisa
@@ -201,7 +210,7 @@ const DocumentController = {
         dateExpired: document.dateExpired,
         uploader: document.uploader,
         createdAt: document.createdAt,
-        message: "Document created",
+        message: "Dokumen berhasil di buat.",
       });
     } catch (error) {
       handleError(error, res);
@@ -220,7 +229,9 @@ const DocumentController = {
       );
 
       if (!document)
-        return res.status(404).send({ message: "Document not found" });
+        return res
+          .status(404)
+          .send({ message: "Dokumen dengan id itu tidak ditemukan!" });
 
       const token =
         req.body.token || req.query.token || req.headers["x-access-token"];
@@ -237,7 +248,11 @@ const DocumentController = {
         userId === String(document.uploader._id);
 
       if (!canAccess) {
-        return res.status(403).send({ message: "Access denied" });
+        return res
+          .status(403)
+          .send({
+            message: "User ini tidak diperbolehkan mengakses dokumen ini!",
+          });
       }
 
       res.status(200).send(document);
@@ -259,7 +274,9 @@ const DocumentController = {
       ).populate("uploader", "username roleId");
 
       if (!document)
-        return res.status(404).send({ message: "Document not found" });
+        return res
+          .status(404)
+          .send({ message: "Dokumen dengan id ini tidak ditemukan!" });
 
       res.status(200).send(document);
     } catch (error) {
@@ -275,9 +292,11 @@ const DocumentController = {
     try {
       const document = await Document.findByIdAndDelete(req.params.id);
       if (!document)
-        return res.status(404).send({ message: "Document not found" });
+        return res
+          .status(404)
+          .send({ message: "Dokumen dengan id ini tidak ditemukan!" });
 
-      res.status(200).send({ message: "Document deleted" });
+      res.status(200).send({ message: "Dokumen berhasil di hapus!" });
     } catch (error) {
       handleError(error, res);
     }
@@ -287,11 +306,17 @@ const DocumentController = {
     try {
       const doc = await Document.findById(req.params.id);
       if (!doc) {
-        return res.status(404).send({ message: "Document not found" });
+        return res
+          .status(404)
+          .send({ message: "Dokumen dengan id ini tidak ditemukan!" });
       }
       const pdfPath = path.join(__dirname, `../../uploads/documents/${doc.id}`); // the pdf file location
       if (!fs.existsSync(pdfPath))
-        return res.status(404).send({ message: "Document not found" }); // check if the pdf file exist
+        return res
+          .status(404)
+          .send({
+            message: "Dokumen dengan id ini tidak ditemukan dalam file system!",
+          }); // check if the pdf file exist
       const existingPdfBytes = fs.readFileSync(pdfPath);
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
@@ -300,7 +325,9 @@ const DocumentController = {
         `../../uploads/signature/${res.locals.decoded.id}`,
       ); // the user signature image location
       if (!fs.existsSync(imagePath))
-        return res.status(404).send({ message: "Signature not found" }); // check if the user signature image exist
+        return res
+          .status(404)
+          .send({ message: "Gambar tanda tangan user tidak ditemukan!" }); // check if the user signature image exist
       const imageBytes = fs.readFileSync(imagePath);
       // Detect image format by magic number
       let image;
@@ -311,7 +338,9 @@ const DocumentController = {
         // JPEG
         image = await pdfDoc.embedJpg(imageBytes);
       } else {
-        throw new Error("Unsupported image format (not PNG or JPEG)");
+        throw new Error(
+          "Format gambar tidak didukung. (hanya mendukung PNG atau JPEG)",
+        );
       }
 
       const pages = pdfDoc.getPages();
@@ -338,11 +367,15 @@ const DocumentController = {
           doc.pointer.width = undefined;
           doc.pointer.height = undefined;
           await doc.save();
-          return res.status(200).send({ message: "success" });
+          return res
+            .status(200)
+            .send({ message: "Dokumen berhasil di tanda tangani!" });
         }
       }
 
-      res.status(400).send({ message: "You can't sign this document" });
+      res
+        .status(400)
+        .send({ message: "Anda tidak bisa menanda tangani dokumen ini" });
     } catch (err) {
       handleError(err, res);
     }

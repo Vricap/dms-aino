@@ -38,14 +38,16 @@ const Authenticator = {
     if (token) {
       jwt.verify(token, secret, (err, decoded) => {
         if (err) {
-          return res.status(403).send({ message: "Authentication failed" });
+          return res
+            .status(403)
+            .send({ message: "Proses autentikasi tidak berhasil!" });
         }
         res.locals.decoded = decoded;
         return next();
       });
     } else {
       return res.status(403).send({
-        message: "No token provided",
+        message: "Token tidak ditemukan, silahkan login terlebih dahulu!",
       });
     }
   },
@@ -75,7 +77,7 @@ const Authenticator = {
     try {
       const isAdmin = await Authenticator.isAdmin(res.locals.decoded.roleId);
       if (isAdmin) return next();
-      return res.status(403).send({ message: "Access denied" });
+      return res.status(403).send({ message: "Akses ditolak!" });
     } catch (err) {
       handleError(err, res);
     }
@@ -93,7 +95,7 @@ const Authenticator = {
     try {
       const usr = await user.findById(req.params.id);
       if (!usr) {
-        return res.status(404).send({ message: "User not found" });
+        return res.status(404).send({ message: "User tidak ditemukan!" });
       }
 
       const isAdmin = await Authenticator.isAdmin(res.locals.decoded.roleId);
@@ -104,7 +106,7 @@ const Authenticator = {
         return next();
       }
 
-      return res.status(403).send({ message: "Access denied" });
+      return res.status(403).send({ message: "Akses ditolak!" });
     } catch (error) {
       handleError(error, res);
     }
@@ -123,11 +125,11 @@ const Authenticator = {
       .findById(req.params.id)
       .then((document) => {
         if (!document) {
-          return res.status(404).send({ message: "Document not found" });
+          return res.status(404).send({ message: "Dokumen tidak ditemukan!" });
         }
-        
+
         if (res.locals.decoded.id !== document.uploader.toString()) {
-          return res.status(403).send({ message: "Access denied" });
+          return res.status(403).send({ message: "Akses ditolak!" });
         }
 
         res.locals.document = document;

@@ -50,7 +50,7 @@ const UserController = {
   async create(req, res) {
     try {
       if (req.body.roleId === "1") {
-        return res.status(401).send({ message: "Invalid roleId" });
+        return res.status(401).send({ message: "RoleId tidak valid!" });
       }
 
       const user = new User(req.body);
@@ -63,7 +63,7 @@ const UserController = {
       });
 
       const response = Authenticator.secureUserDetails(user);
-      response.message = "User created";
+      response.message = "User berhasil di buat!";
       response.token = token;
 
       res.status(201).send(response);
@@ -79,7 +79,8 @@ const UserController = {
   async getUser(req, res) {
     try {
       const user = await User.findById(req.params.id);
-      if (!user) return res.status(404).send({ message: "User not found" });
+      if (!user)
+        return res.status(404).send({ message: "User tidak ditemukan!" });
 
       res.status(200).send(Authenticator.secureUserDetails(user));
     } catch (error) {
@@ -95,7 +96,8 @@ const UserController = {
     try {
       if (req.body.roleId === "1" && res.locals.decoded.roleId !== 1) {
         return res.status(403).send({
-          message: "Only an admin can upgrade a user to an admin role",
+          message:
+            "Hanya role Admin yang dapat meng-upgrade seorang user ke Admin!",
         });
       }
 
@@ -104,7 +106,8 @@ const UserController = {
         runValidators: true,
       });
 
-      if (!user) return res.status(404).send({ message: "User not found" });
+      if (!user)
+        return res.status(404).send({ message: "User tidak ditemukan!" });
 
       res.status(200).send(Authenticator.secureUserDetails(user));
     } catch (error) {
@@ -119,13 +122,14 @@ const UserController = {
   async delete(req, res) {
     try {
       if (res.locals.decoded.id !== req.params.id) {
-        return res.status(403).send({ message: "Access denied" });
+        return res.status(403).send({ message: "Akses ditolak!" });
       }
 
       const user = await User.findByIdAndDelete(req.params.id);
-      if (!user) return res.status(404).send({ message: "User not found" });
+      if (!user)
+        return res.status(404).send({ message: "User tidak ditemukan!" });
 
-      res.status(200).send({ message: "User deleted" });
+      res.status(200).send({ message: "User berhasil di hapus!" });
     } catch (error) {
       handleError(error, res);
     }
@@ -155,7 +159,11 @@ const UserController = {
     try {
       const user = await User.findOne({ username: req.body.username });
       if (!user || !(await user.verifyPassword(req.body.password))) {
-        return res.status(401).send({ message: "Wrong password or username" });
+        return res
+          .status(401)
+          .send({
+            message: "Username atau password salah! Silahkan coba lagi.",
+          });
       }
       const role = await Role.findById(user.roleId);
 
@@ -171,7 +179,7 @@ const UserController = {
       res.status(200).send({
         token,
         user: userObj,
-        message: "Login successful",
+        message: "Login berhasil!",
       });
     } catch (error) {
       handleError(error, res);
@@ -195,8 +203,12 @@ const UserController = {
         `../../uploads/signature/${req.params.id}`,
       );
       if (!fs.existsSync(imagePath))
-        return res.status(404).send({ message: "Signature not found" });
-        
+        return res
+          .status(404)
+          .send({
+            message: "Gambar signature tidak ditemukan dalam file system!",
+          });
+
       res.sendFile(imagePath);
     } catch (error) {
       handleError(error, res);
@@ -206,16 +218,22 @@ const UserController = {
   async createSignature(req, res) {
     try {
       const user = await User.findById(res.locals.decoded.id);
-      if (!user) return res.status(404).send({ message: "User not found" });
+      if (!user)
+        return res.status(404).send({ message: "User tidak ditemukan!" });
       if (!req.file) {
-        return res.status(400).send({ message: "Missing file" });
+        return res
+          .status(400)
+          .send({
+            message:
+              "File gambar tanda tangan hilang. Pastikan sudah mengupload gambar dengan benar!",
+          });
       }
 
       // const extension = path.extname(req.signature.originalname);
       const fPath = path.join(__dirname, "../../uploads/signature/");
       fs.writeFileSync(fPath + user._id, req.file.buffer);
 
-      res.status(201).send({ message: "success" });
+      res.status(201).send({ message: "Tanda tangan berhasil di buat!" });
     } catch (error) {
       handleError(error, res);
     }
