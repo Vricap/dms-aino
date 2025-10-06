@@ -6,11 +6,22 @@ import handleError from "../helpers/handleError.js";
 import paginate from "../helpers/paginate.js";
 
 import path from "path";
+import sharp from "sharp";
 import fs from "fs";
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const standardizeImage = async (buffer) => {
+  const width = 400;
+  const height = 200;
+  return sharp(buffer)
+    .resize(width, height, {
+      fit: "cover",
+      // position: "center",
+    })
+    .toBuffer();
+};
 const UserController = {
   /**
    * Get users
@@ -159,11 +170,9 @@ const UserController = {
     try {
       const user = await User.findOne({ username: req.body.username });
       if (!user || !(await user.verifyPassword(req.body.password))) {
-        return res
-          .status(401)
-          .send({
-            message: "Username atau password salah! Silahkan coba lagi.",
-          });
+        return res.status(401).send({
+          message: "Username atau password salah! Silahkan coba lagi.",
+        });
       }
       const role = await Role.findById(user.roleId);
 
@@ -203,11 +212,9 @@ const UserController = {
         `../../uploads/signature/${req.params.id}`,
       );
       if (!fs.existsSync(imagePath))
-        return res
-          .status(404)
-          .send({
-            message: "Gambar signature tidak ditemukan dalam file system!",
-          });
+        return res.status(404).send({
+          message: "Gambar signature tidak ditemukan dalam file system!",
+        });
 
       res.sendFile(imagePath);
     } catch (error) {
@@ -221,17 +228,17 @@ const UserController = {
       if (!user)
         return res.status(404).send({ message: "User tidak ditemukan!" });
       if (!req.file) {
-        return res
-          .status(400)
-          .send({
-            message:
-              "File gambar tanda tangan hilang. Pastikan sudah mengupload gambar dengan benar!",
-          });
+        return res.status(400).send({
+          message:
+            "File gambar tanda tangan hilang. Pastikan sudah mengupload gambar dengan benar!",
+        });
       }
 
       // const extension = path.extname(req.signature.originalname);
       const fPath = path.join(__dirname, "../../uploads/signature/");
-      fs.writeFileSync(fPath + user._id, req.file.buffer);
+      // Resize (standardize) in memory
+      const standardizedBuffer = await standardizeImage(req.file.buffer);
+      fs.writeFileSync(fPath + user._id, standardizedBuffer);
 
       res.status(201).send({ message: "Tanda tangan berhasil di buat!" });
     } catch (error) {
