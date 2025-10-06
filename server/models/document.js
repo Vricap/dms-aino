@@ -86,39 +86,37 @@ const DocumentSchema = new mongoose.Schema(
         message: "Status in invalid",
       },
     },
-    receiver: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-        dateSent: {
-          type: Date,
-        },
-        dateSigned: {
-          type: Date,
-        },
+    receiver: {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
       },
-    ],
+      dateSent: {
+        type: Date,
+      },
+      dateSigned: {
+        type: Date,
+      },
+    },
     dateExpired: {
       type: Date,
     },
     pointer: {
-   		page: {
-    		type: Number,
-    	},
-    	x: {
-    		type: Number,
-    	},
-    	y: {
-    		type: Number,
-    	},
-    	width: {
-    		type: Number,
-    	},
-    	height: {
-    		type: Number,
-    	},
+      page: {
+        type: Number,
+      },
+      x: {
+        type: Number,
+      },
+      y: {
+        type: Number,
+      },
+      width: {
+        type: Number,
+      },
+      height: {
+        type: Number,
+      },
     },
   },
   {

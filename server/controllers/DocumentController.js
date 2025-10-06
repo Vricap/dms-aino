@@ -29,24 +29,24 @@ const romanMonths = [
   "XII",
 ];
 
-function filterReceiver(id, documents) {
-  let doc = documents;
-  for (let i = 0; i < doc.length; i++) {
-    if (doc[i].receiver.length == 0) continue;
-    let arr = [];
-    for (let j = 0; j < doc[i].receiver.length; j++) {
-      if (doc[i].receiver[j].user == id) {
-        arr.push({
-          user: doc[i].receiver[j].user,
-          dateSent: doc[i].receiver[j].dateSent,
-          dateSigned: doc[i].receiver[j].dateSigned,
-        });
-      }
-    }
-    doc[i].receiver = arr;
-  }
-  return doc;
-}
+// function filterReceiver(id, documents) {
+//   let doc = documents;
+//   for (let i = 0; i < doc.length; i++) {
+//     if (doc[i].receiver.length == 0) continue;
+//     let arr = [];
+//     for (let j = 0; j < doc[i].receiver.length; j++) {
+//       if (doc[i].receiver[j].user == id) {
+//         arr.push({
+//           user: doc[i].receiver[j].user,
+//           dateSent: doc[i].receiver[j].dateSent,
+//           dateSigned: doc[i].receiver[j].dateSigned,
+//         });
+//       }
+//     }
+//     doc[i].receiver = arr;
+//   }
+//   return doc;
+// }
 
 async function getNextCounter(name) {
   const counter = await Counter.findOneAndUpdate(
@@ -142,9 +142,9 @@ const DocumentController = {
       });
 
       // we filter only the doc that have the user as receiver
-      const doc = filterReceiver(decoded.id, documents);
+      // const doc = filterReceiver(decoded.id, documents);
       res.status(200).send({
-        rows: doc,
+        rows: documents,
       });
     } catch (error) {
       handleError(error, res);
@@ -321,12 +321,10 @@ const DocumentController = {
         `../../uploads/signature/${res.locals.decoded.id}`,
       ); // the user signature image location
       if (!fs.existsSync(imagePath))
-        return res
-          .status(404)
-          .send({
-            message:
-              "Gambar tanda tangan user tidak ditemukan, silahkan upload gambar tanda tanganmu terlebih dahulu di bagian profile!",
-          }); // check if the user signature image exist
+        return res.status(404).send({
+          message:
+            "Gambar tanda tangan user tidak ditemukan, silahkan upload gambar tanda tanganmu terlebih dahulu di bagian profile!",
+        }); // check if the user signature image exist
       const imageBytes = fs.readFileSync(imagePath);
       // Detect image format by magic number
       let image;
@@ -343,6 +341,7 @@ const DocumentController = {
       }
 
       const pages = pdfDoc.getPages();
+      // TODO: the signature is sometimes offset from the placeholder. maybe make all the signature image the same size??
       pages[doc.pointer.page - 1].drawImage(image, {
         x: doc.pointer.x,
         y: doc.pointer.y,
@@ -350,26 +349,24 @@ const DocumentController = {
         height: doc.pointer.height,
       });
 
-      for (const el of doc.receiver) {
-        const id = el.user.toString();
-        if (res.locals.decoded.id == id) {
-          const pdfBytes = await pdfDoc.save();
-          fs.writeFileSync(
-            path.join(__dirname, `../../uploads/documents/${doc.id}`),
-            pdfBytes,
-          );
-          el.dateSigned = new Date();
-          doc.status = "complete";
-          doc.pointer.page = undefined;
-          doc.pointer.x = undefined;
-          doc.pointer.y = undefined;
-          doc.pointer.width = undefined;
-          doc.pointer.height = undefined;
-          await doc.save();
-          return res
-            .status(200)
-            .send({ message: "Dokumen berhasil di tanda tangani!" });
-        }
+      const id = doc.receiver.user.toString();
+      if (res.locals.decoded.id == id) {
+        const pdfBytes = await pdfDoc.save();
+        fs.writeFileSync(
+          path.join(__dirname, `../../uploads/documents/${doc.id}`),
+          pdfBytes,
+        );
+        doc.receiver.dateSigned = new Date();
+        doc.status = "complete";
+        doc.pointer.page = undefined;
+        doc.pointer.x = undefined;
+        doc.pointer.y = undefined;
+        doc.pointer.width = undefined;
+        doc.pointer.height = undefined;
+        await doc.save();
+        return res
+          .status(200)
+          .send({ message: "Dokumen berhasil di tanda tangani!" });
       }
 
       res
