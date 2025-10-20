@@ -322,36 +322,36 @@ const DocumentController = {
       }
 
       const pages = pdfDoc.getPages();
-      pages[doc.pointer.page - 1].drawImage(image, {
-        x: doc.pointer.x,
-        y: doc.pointer.y - 50,
-        width: doc.pointer.width,
-        height: doc.pointer.height,
-      });
-
       const id = doc.receiver.user.toString();
       if (res.locals.decoded.id == id) {
+        for (const pos of doc.pointer) {
+          pages[pos.page - 1].drawImage(image, {
+            x: pos.x,
+            y: pos.y - 50,
+            width: pos.width,
+            height: pos.height,
+          });
+
+          doc.receiver.dateSigned = new Date();
+          doc.status = "complete";
+          pos.page = undefined;
+          pos.x = undefined;
+          pos.y = undefined;
+          pos.width = undefined;
+          pos.height = undefined;
+        }
         const pdfBytes = await pdfDoc.save();
         fs.writeFileSync(
           path.join(__dirname, `../../uploads/documents/${doc.id}`),
           pdfBytes,
         );
-        doc.receiver.dateSigned = new Date();
-        doc.status = "complete";
-        doc.pointer.page = undefined;
-        doc.pointer.x = undefined;
-        doc.pointer.y = undefined;
-        doc.pointer.width = undefined;
-        doc.pointer.height = undefined;
         await doc.save();
-        return res
-          .status(200)
-          .send({ message: "Dokumen berhasil di tanda tangani!" });
+      } else {
+        res
+          .status(400)
+          .send({ message: "Anda tidak bisa menanda tangani dokumen ini" });
       }
-
-      res
-        .status(400)
-        .send({ message: "Anda tidak bisa menanda tangani dokumen ini" });
+      res.status(200).send({ message: "Dokumen berhasil di tanda tangani!" });
     } catch (err) {
       handleError(err, res);
     }
