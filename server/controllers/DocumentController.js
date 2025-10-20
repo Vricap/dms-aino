@@ -347,7 +347,7 @@ const DocumentController = {
         );
         await doc.save();
       } else {
-        res
+        return res
           .status(400)
           .send({ message: "Anda tidak bisa menanda tangani dokumen ini" });
       }
