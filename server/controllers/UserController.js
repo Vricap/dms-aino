@@ -105,22 +105,29 @@ const UserController = {
    */
   async update(req, res) {
     try {
-      if (req.body.roleId === "1" && res.locals.decoded.roleId !== 1) {
-        return res.status(403).send({
-          message:
-            "Hanya role Admin yang dapat meng-upgrade seorang user ke Admin!",
-        });
-      }
+      // if (req.body.roleId === "1" && res.locals.decoded.roleId !== 1) {
+      //   return res.status(403).send({
+      //     message:
+      //       "Hanya role Admin yang dapat meng-upgrade seorang user ke Admin!",
+      //   });
+      // }
 
-      const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true,
-      });
-
+      const user = await User.findById(req.params.id);
+      const userData = req.body.data;
       if (!user)
         return res.status(404).send({ message: "User tidak ditemukan!" });
 
-      res.status(200).send(Authenticator.secureUserDetails(user));
+      if (userData.username) {
+        user.username = userData.username;
+      }
+
+      if (userData.newPassword) {
+        user.password = userData.newPassword;
+      }
+
+      await user.save();
+      
+      res.status(200).send(await Authenticator.secureUserDetails(user));
     } catch (error) {
       handleError(error, res);
     }

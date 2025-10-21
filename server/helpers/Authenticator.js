@@ -144,15 +144,14 @@ const Authenticator = {
    * @param {String} user user details
    * @returns {Object} secure data
    */
-  secureUserDetails(user) {
-    return {
+  async secureUserDetails(user) {
+  	const r = await role.findOne({ _id: user.roleId })
+	return {
       id: user.id,
       username: user.username,
-      fullName: user.fullName,
       email: user.email,
-      roleId: user.roleId,
-      about: user.about,
-    };
+      role: r.name,
+    }
   },
 };
 
