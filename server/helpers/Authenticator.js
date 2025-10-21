@@ -151,6 +151,7 @@ const Authenticator = {
       username: user.username,
       email: user.email,
       role: r.name,
+      division: user.division,
     }
   },
 };
