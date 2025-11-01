@@ -38,11 +38,12 @@ const UserController = {
       };
 
       const total = await User.countDocuments(query);
-      const users = await User.find(query, "id username email roleId division")
+      const users = await User.find(query, "id username email roleId division").
+      	populate("roleId", "name")
         .sort({ createdAt: -1 })
         .skip(offset)
         .limit(limit);
-
+        
       const response = {
         rows: users,
         metaData: paginate(total, limit, offset),
@@ -60,11 +61,16 @@ const UserController = {
    */
   async create(req, res) {
     try {
-      if (req.body.roleId === "1") {
-        return res.status(401).send({ message: "RoleId tidak valid!" });
-      }
+      // if (req.body.role === "admin") {
+      //   return res
+      //     .status(401)
+      //     .send({ message: "Hanya admin yang bisa membuat user baru!" });
+      // }
 
       const user = new User(req.body);
+      const role = await Role.findOne({ name: req.body.role });
+      user.roleId = role.id;
+      delete user.role;
       await user.save();
 
       const token = Authenticator.generateToken({
@@ -93,7 +99,7 @@ const UserController = {
       if (!user)
         return res.status(404).send({ message: "User tidak ditemukan!" });
 
-      res.status(200).send(Authenticator.secureUserDetails(user));
+      res.status(200).send(await Authenticator.secureUserDetails(user));
     } catch (error) {
       handleError(error, res);
     }
@@ -119,6 +125,19 @@ const UserController = {
 
       if (userData.username) {
         user.username = userData.username;
+      } 
+
+      if (userData.email) {
+        user.email = userData.email;
+      } 
+
+      if (userData.role) {
+      	const role = await Role.findOne({ name: userData.role });
+        user.roleId = role._id;
+      } 
+
+      if (userData.division) {
+        user.division = userData.division;
       }
 
       if (userData.newPassword) {
@@ -126,7 +145,7 @@ const UserController = {
       }
 
       await user.save();
-      
+
       res.status(200).send(await Authenticator.secureUserDetails(user));
     } catch (error) {
       handleError(error, res);
@@ -139,9 +158,9 @@ const UserController = {
    */
   async delete(req, res) {
     try {
-      if (res.locals.decoded.id !== req.params.id) {
-        return res.status(403).send({ message: "Akses ditolak!" });
-      }
+      // if (res.locals.decoded.id !== req.params.id) {
+      //   return res.status(403).send({ message: "Akses ditolak!" });
+      // }
 
       const user = await User.findByIdAndDelete(req.params.id);
       if (!user)

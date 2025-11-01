@@ -29,6 +29,25 @@ const romanMonths = [
   "XII",
 ];
 
+function filterReceiver(id, documents) {
+  let doc = documents;
+  for (let i = 0; i < doc.length; i++) {
+    if (doc[i].receiver.length == 0) continue;
+    let arr = [];
+    for (let j = 0; j < doc[i].receiver.length; j++) {
+      if (doc[i].receiver[j].user == id) {
+        arr.push({
+          user: doc[i].receiver[j].user,
+          dateSent: doc[i].receiver[j].dateSent,
+          dateSigned: doc[i].receiver[j].dateSigned,
+        });
+      }
+    }
+    doc[i].receiver = arr;
+  }
+  return doc;
+}
+
 async function getNextCounter(name) {
   const counter = await Counter.findOneAndUpdate(
     { name },
