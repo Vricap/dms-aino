@@ -86,40 +86,59 @@ const DocumentSchema = new mongoose.Schema(
         message: "Status in invalid",
       },
     },
+    // TODO: maybe we should sub-document this thing
     receiver: {
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+      current: {
+        // current urutan
+        type: Number,
+        default: 1,
       },
-      dateSent: {
-        type: Date,
-      },
-      dateSigned: {
-        type: Date,
-      },
+      data: [
+        {
+          urutan: {
+            // the master. all should orbite around this
+            type: Number,
+          },
+          signed: {
+            type: Boolean,
+            default: false,
+          },
+          user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+          },
+          dateSent: {
+            type: Date,
+          },
+          dateSigned: {
+            type: Date,
+          },
+          pointer: {
+            page: {
+              type: Number,
+            },
+            x: {
+              type: Number,
+            },
+            y: {
+              type: Number,
+            },
+            width: {
+              type: Number,
+            },
+            height: {
+              type: Number,
+            },
+          },
+        },
+      ],
     },
     dateExpired: {
       type: Date,
     },
-    pointer: [
-      {
-        page: {
-          type: Number,
-        },
-        x: {
-          type: Number,
-        },
-        y: {
-          type: Number,
-        },
-        width: {
-          type: Number,
-        },
-        height: {
-          type: Number,
-        },
-      },
-    ],
+    dateComplete: {
+      type: Date,
+    },
   },
   {
     timestamps: true, // Optional: adds createdAt and updatedAt fields

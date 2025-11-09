@@ -29,25 +29,6 @@ const romanMonths = [
   "XII",
 ];
 
-function filterReceiver(id, documents) {
-  let doc = documents;
-  for (let i = 0; i < doc.length; i++) {
-    if (doc[i].receiver.length == 0) continue;
-    let arr = [];
-    for (let j = 0; j < doc[i].receiver.length; j++) {
-      if (doc[i].receiver[j].user == id) {
-        arr.push({
-          user: doc[i].receiver[j].user,
-          dateSent: doc[i].receiver[j].dateSent,
-          dateSigned: doc[i].receiver[j].dateSigned,
-        });
-      }
-    }
-    doc[i].receiver = arr;
-  }
-  return doc;
-}
-
 async function getNextCounter(name) {
   const counter = await Counter.findOneAndUpdate(
     { name },
@@ -116,9 +97,9 @@ const DocumentController = {
         throw new Error("File tidak ditemukan");
       }
       const doc = await Document.findById(req.params.id);
-      if (doc && doc.pointer) {
+      if (doc) {
         res.setHeader("Access-Control-Expose-Headers", "X-Meta-Info");
-        res.set("X-Meta-Info", JSON.stringify({ message: doc.pointer }));
+        res.set("X-Meta-Info", JSON.stringify({ message: doc.receiver }));
       }
       res.type("application/pdf");
       res.sendFile(fPath);
@@ -136,15 +117,25 @@ const DocumentController = {
       if (!decoded)
         throw new Error("User is unknown! Please login with valid user.");
 
-      const documents = await Document.find({
-        "receiver.user": decoded.id,
-        status: "sent",
-      });
+      const documents = await Document.find({ status: "sent" });
 
-      // we filter only the doc that have the user as receiver
-      // const doc = filterReceiver(decoded.id, documents);
+      let filteredDoc = [];
+      for (const obj of documents) {
+        obj.receiver.data.forEach((val) => {
+          if (
+            val.urutan === obj.receiver.current &&
+            res.locals.decoded.id === val.user.toString()
+          ) {
+            const plain = obj.toObject(); // have to do this to add new key
+            plain.dateSent = val.dateSent;
+            console.log(plain);
+            filteredDoc.push(plain);
+          }
+        });
+      }
+
       res.status(200).send({
-        rows: documents,
+        rows: filteredDoc,
       });
     } catch (error) {
       handleError(error, res);
@@ -265,18 +256,16 @@ const DocumentController = {
    */
   async update(req, res) {
     try {
-      const document = await Document.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true, runValidators: true },
-      ).populate("uploader", "username roleId");
-
+      const document = await Document.findById(req.params.id);
       if (!document)
         return res
           .status(404)
           .send({ message: "Dokumen dengan id ini tidak ditemukan!" });
 
-      res.status(200).send(document);
+      document.receiver.data = req.body.data;
+      document.status = "sent";
+      await document.save();
+      res.status(200).send({ message: "success" });
     } catch (error) {
       handleError(error, res);
     }
@@ -308,6 +297,16 @@ const DocumentController = {
           .status(404)
           .send({ message: "Dokumen dengan id ini tidak ditemukan!" });
       }
+
+      if (doc.receiver.current > doc.receiver.data.length) {
+        doc.status = "complete";
+        await doc.save();
+        return res.status(400).send({
+          message:
+            "Semua tanda tangan sudah di tanda tangani dalam dokumen ini!",
+        });
+      }
+
       const pdfPath = path.join(__dirname, `../../uploads/documents/${doc.id}`); // the pdf file location
       if (!fs.existsSync(pdfPath))
         return res.status(404).send({
@@ -340,36 +339,45 @@ const DocumentController = {
         );
       }
 
-      const pages = pdfDoc.getPages();
-      const id = doc.receiver.user.toString();
-      if (res.locals.decoded.id == id) {
-        for (const pos of doc.pointer) {
-          pages[pos.page - 1].drawImage(image, {
-            x: pos.x,
-            y: pos.y - 50,
-            width: pos.width,
-            height: pos.height,
-          });
-
-          doc.receiver.dateSigned = new Date();
-          doc.status = "complete";
-          pos.page = undefined;
-          pos.x = undefined;
-          pos.y = undefined;
-          pos.width = undefined;
-          pos.height = undefined;
+      let index = null;
+      for (let i = 0; i < doc.receiver.data.length; i++) {
+        if (
+          doc.receiver.data[i].user.toString() === res.locals.decoded.id &&
+          doc.receiver.data[i].urutan === doc.receiver.current
+        ) {
+          index = i;
+          break;
         }
-        const pdfBytes = await pdfDoc.save();
-        fs.writeFileSync(
-          path.join(__dirname, `../../uploads/documents/${doc.id}`),
-          pdfBytes,
-        );
-        await doc.save();
-      } else {
+      }
+
+      if (index === null) {
         return res
           .status(400)
-          .send({ message: "Anda tidak bisa menanda tangani dokumen ini" });
+          .send({ message: "Anda tidak bisa menanda tangani dokumen ini" }); // TODO: better error message
       }
+
+      const pages = pdfDoc.getPages();
+      pages[doc.receiver.data[index].pointer.page - 1].drawImage(image, {
+        x: doc.receiver.data[index].pointer.x,
+        y: doc.receiver.data[index].pointer.y - 50,
+        width: doc.receiver.data[index].pointer.width,
+        height: doc.receiver.data[index].pointer.height,
+      });
+
+      doc.receiver.data[index].dateSigned = new Date();
+      doc.receiver.data[index].signed = true;
+      doc.receiver.current++;
+      if (doc.receiver.current > doc.receiver.data.length) {
+        doc.status = "complete";
+        doc.dateComplete = new Date();
+      }
+
+      const pdfBytes = await pdfDoc.save();
+      fs.writeFileSync(
+        path.join(__dirname, `../../uploads/documents/${doc.id}`),
+        pdfBytes,
+      );
+      await doc.save();
       res.status(200).send({ message: "Dokumen berhasil di tanda tangani!" });
     } catch (err) {
       handleError(err, res);
