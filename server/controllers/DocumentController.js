@@ -383,6 +383,26 @@ const DocumentController = {
       handleError(err, res);
     }
   },
+  async getDocumentsSigned(req, res) {
+    try {
+      const docs = await Document.find();
+      const id = res.locals.decoded.id;
+      let signed = [];
+
+      for (const obj of docs) {
+        for (const r of obj.receiver.data) {
+          if (r.user.toString() === id && r.signed) {
+            const plain = obj.toObject();
+            plain.dateSigned = r.dateSigned;
+            signed.push(plain);
+          }
+        }
+      }
+      res.status(200).send(signed);
+    } catch (err) {
+      handleError(err, res);
+    }
+  },
 };
 
 export default DocumentController;
