@@ -4,7 +4,10 @@ import bodyParser from "body-parser";
 import routes from "./routes/index.js";
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000", // change to frontend production URL
+  credentials: true,
+}));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false })); // parse form data
 
