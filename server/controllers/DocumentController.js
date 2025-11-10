@@ -8,8 +8,10 @@ import handleError from "../helpers/handleError.js";
 import paginate from "../helpers/paginate.js";
 
 import path from "path";
-import fs from "fs";
 import { fileURLToPath } from "url";
+import fs from "fs";
+import { promisify } from "util";
+const unlinkAsync = promisify(fs.unlink);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -128,7 +130,6 @@ const DocumentController = {
           ) {
             const plain = obj.toObject(); // have to do this to add new key
             plain.dateSent = val.dateSent;
-            console.log(plain);
             filteredDoc.push(plain);
           }
         });
@@ -277,11 +278,25 @@ const DocumentController = {
    */
   async delete(req, res) {
     try {
+      const fPath = path.join(
+        __dirname,
+        "../../uploads/documents/" + req.params.id,
+      );
+
       const document = await Document.findByIdAndDelete(req.params.id);
       if (!document)
         return res
           .status(404)
           .send({ message: "Dokumen dengan id ini tidak ditemukan!" });
+
+      if (!fs.existsSync(fPath)) {
+        return res.status(404).send({
+          message:
+            "Dokumen berhasil dihapus dari database, namun file tidak ditemukan dalam storage!",
+        });
+      }
+
+      await unlinkAsync(fPath);
 
       res.status(200).send({ message: "Dokumen berhasil di hapus!" });
     } catch (error) {
