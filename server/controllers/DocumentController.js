@@ -75,11 +75,13 @@ const DocumentController = {
       const total = await Document.countDocuments(query);
       const documents = await Document.find(query)
         .populate("uploader", "username roleId")
+        .populate("receiver.data.user", "username")
         .sort({ createdAt: -1 })
         .skip(offset)
         .limit(limit);
 
       let removed = 0;
+
       res.status(200).send({
         rows: documents,
         metaData: paginate(total - removed, limit, offset),
@@ -168,7 +170,7 @@ const DocumentController = {
       // document naming standart: 001/CHC/BA/I/2024 unisa
       const extension = path.extname(req.file.originalname);
       const type = req.body.type;
-      const division = user.division;
+      const division = req.body.division;
       const count = await getNextCounter(division); // create a per-division counter
       const paddedCount = String(count).padStart(3, "0");
 

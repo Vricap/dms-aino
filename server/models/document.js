@@ -15,8 +15,23 @@ const DocumentSchema = new mongoose.Schema(
     },
     division: {
       type: String,
+      required: [true, "Division is required"],
       trim: true,
-    },
+      enum: {
+        values: [
+          "MKT",
+          "FIN",
+          "CHC",
+          "PROD",
+          "OPS",
+          "ITINFRA",
+          "LGL",
+          "DIR",
+          "ADMIN",
+        ],
+        message: "Use valid division type",
+      },
+    },    
     type: {
       type: String,
       required: [true, "Document type is required"],

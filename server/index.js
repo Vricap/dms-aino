@@ -19,8 +19,9 @@ app.use(morgan("dev"));
 // app.use(express.static("/api_docs"));
 app.use(compression());
 
-// app.get("/api", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../api_docs/index.html"));
+// app.use(express.static(path.join(__dirname + "/../", "build")));
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname + "/../", "build", "index.html"));
 // });
 
 // 1. Serve static files *first*
