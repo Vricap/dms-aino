@@ -121,7 +121,10 @@ const DocumentController = {
       if (!decoded)
         throw new Error("User is unknown! Please login with valid user.");
 
-      const documents = await Document.find({ status: "sent" });
+      const documents = await Document.find({ status: "sent" }).populate(
+        "uploader",
+        "username",
+      );
 
       let filteredDoc = [];
       for (const obj of documents) {
