@@ -148,6 +148,51 @@ const DocumentController = {
     }
   },
 
+  async getDocumentAudit(req, res) {
+    try {
+      const document = await Document.findById(req.params.id)
+        .populate("uploader", "username")
+        .populate("receiver.data.user", "username")
+        .populate("logs.views.user", "username")
+        .populate("logs.downloads.user", "username");
+
+      if (!document)
+        return res
+          .status(404)
+          .send({ message: "Dokumen dengan id itu tidak ditemukan!" });
+    } catch (error) {
+      handleError(error, res);
+    }
+  },
+
+  async updateLogs(req, res) {
+    try {
+      const document = await Document.findById(req.params.id);
+      if (!document)
+        return res
+          .status(404)
+          .send({ message: "Dokumen dengan id itu tidak ditemukan!" });
+
+      const activity = req.query.activity || "";
+      if (activity === "view") {
+        document.logs.views.push({
+          user: res.locals.decoded.id,
+          dateView: new Date(),
+        });
+      } else if (activity === "download") {
+        document.logs.downloads.push({
+          user: res.locals.decoded.id,
+          dateDownload: new Date(),
+        });
+      }
+
+      await document.save();
+      res.status(200).send({ message: "success" });
+    } catch (error) {
+      handleError(error, res);
+    }
+  },
+
   /**
    * Create a document
    * Route: POST: /documents

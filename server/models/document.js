@@ -31,7 +31,7 @@ const DocumentSchema = new mongoose.Schema(
         ],
         message: "Use valid division type",
       },
-    },    
+    },
     type: {
       type: String,
       required: [true, "Document type is required"],
@@ -147,6 +147,31 @@ const DocumentSchema = new mongoose.Schema(
           },
         },
       ],
+    },
+    logs: {
+      views: [
+        {
+          user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+          },
+          dateView: {
+            type: Date,
+          },
+        },
+      ],
+      downloads: [
+        {
+          user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+          },
+          dateDownload: {
+            type: Date,
+          },
+        },
+      ],
+      delete: {}, // TODO: not implemented
     },
     dateExpired: {
       type: Date,

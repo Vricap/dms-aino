@@ -50,6 +50,16 @@ export default (app) => {
     Authenticator.verifyUser,
     DocumentController.getDocumentBlob,
   );
+  app.get(
+    "/documents/audit/:id",
+    Authenticator.verifyUser,
+    DocumentController.getDocumentAudit,
+  );
+  app.put(
+    "/documents/logs/:id",
+    Authenticator.verifyUser,
+    DocumentController.updateLogs,
+  );
   app.put(
     "/documents/:id",
     Authenticator.verifyUser,
