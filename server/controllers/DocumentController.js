@@ -160,6 +160,8 @@ const DocumentController = {
         return res
           .status(404)
           .send({ message: "Dokumen dengan id itu tidak ditemukan!" });
+
+      res.status(200).send(document);
     } catch (error) {
       handleError(error, res);
     }
