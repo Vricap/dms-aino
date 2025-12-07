@@ -41,6 +41,12 @@ export default (app) => {
     DocumentController.create,
   );
   app.get(
+    // must be at above of /documents/:id path
+    "/documents/dashboard",
+    Authenticator.verifyUser,
+    DocumentController.getDocumentsDashboard,
+  );
+  app.get(
     "/documents/:id",
     Authenticator.verifyUser,
     DocumentController.getDocument,

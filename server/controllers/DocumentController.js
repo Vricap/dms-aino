@@ -31,6 +31,15 @@ const romanMonths = [
   "XII",
 ];
 
+function filterRange(doc, filter) {
+  if (filter === "daily") {
+  } else if (filter === "weekly") {
+  } else if (filter === "monthly") {
+  }
+
+  return doc;
+}
+
 async function getNextCounter(name) {
   const counter = await Counter.findOneAndUpdate(
     { name },
@@ -162,6 +171,105 @@ const DocumentController = {
           .send({ message: "Dokumen dengan id itu tidak ditemukan!" });
 
       res.status(200).send(document);
+    } catch (error) {
+      handleError(error, res);
+    }
+  },
+
+  async getDocumentsDashboard(req, res) {
+    try {
+      const period = req.query.period || "";
+      const user = await User.findById(res.locals.decoded.id).populate(
+        "roleId",
+        "name",
+      );
+
+      const now = new Date();
+      // today
+      const startOfDay = new Date(now);
+      startOfDay.setHours(0, 0, 0, 0);
+
+      // week
+      const startOfWeek = new Date(now);
+      const day = now.getDay() || 7; // make Sunday = 7
+      startOfWeek.setDate(now.getDate() - day + 1);
+      startOfWeek.setHours(0, 0, 0, 0);
+
+      // month
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      let baseQuery = {};
+      if (user.roleId.name === "user") {
+        baseQuery.uploader = user._id;
+      }
+
+      let range;
+      switch (period) {
+        case "daily":
+          range = { $gte: startOfDay, $lte: now };
+          break;
+        case "weekly":
+          range = { $gte: startOfWeek, $lte: now };
+          break;
+        case "monthly":
+          range = { $gte: startOfMonth, $lte: now };
+          break;
+        case "all":
+          range = { $exists: true }; // hack
+          break;
+      }
+
+      const uploadedQuery = { ...baseQuery, createdAt: range };
+      const sendedQuery = {
+        ...baseQuery,
+        status: "sent",
+        "receiver.data": {
+          $elemMatch: {
+            dateSent: range,
+          },
+        },
+      };
+      const inboxQuery = {
+        ...baseQuery,
+        "receiver.data": {
+          $elemMatch: {
+            user: user._id,
+            signed: false,
+            dateSent: range,
+          },
+        },
+      };
+      const completeQuery = {
+        ...baseQuery,
+        status: "complete",
+        dateComplete: range,
+      };
+      const signedQuery = {
+        ...baseQuery,
+        "receiver.data": {
+          $elemMatch: {
+            user: user._id,
+            signed: true,
+            dateSigned: range,
+          },
+        },
+      };
+
+      const uploaded = await Document.countDocuments(uploadedQuery);
+      const sended = await Document.countDocuments(sendedQuery);
+      const inbox = await Document.countDocuments(inboxQuery);
+      const complete = await Document.countDocuments(completeQuery);
+      const signed = await Document.countDocuments(signedQuery);
+
+      res.status(200).send({
+        data: {
+          uploaded,
+          sended,
+          inbox,
+          complete,
+          signed,
+        },
+      });
     } catch (error) {
       handleError(error, res);
     }
