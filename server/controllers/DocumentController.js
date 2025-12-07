@@ -230,7 +230,7 @@ const DocumentController = {
         },
       };
       const inboxQuery = {
-        ...baseQuery,
+        // ...baseQuery,
         "receiver.data": {
           $elemMatch: {
             user: user._id,
@@ -245,7 +245,7 @@ const DocumentController = {
         dateComplete: range,
       };
       const signedQuery = {
-        ...baseQuery,
+        // ...baseQuery,
         "receiver.data": {
           $elemMatch: {
             user: user._id,
