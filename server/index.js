@@ -15,21 +15,11 @@ let port = process.env.PORT || 8000;
 
 app.use(morgan("dev"));
 
-// app.use(express.static("/client"));
-// app.use(express.static("/api_docs"));
 app.use(compression());
 
 // app.use(express.static(path.join(__dirname + "/../", "build")));
 // app.get("*", (req, res) => {
 //   res.sendFile(path.join(__dirname + "/../", "build", "index.html"));
-// });
-
-// 1. Serve static files *first*
-// app.use(express.static(path.resolve(__dirname, "../dist")));
-
-// 2. Then catch-all for React routes
-// app.get("*", (req, res) => {
-//   res.sendFile(path.resolve(__dirname, "../client/index.html"));
 // });
 
 (async () => {
