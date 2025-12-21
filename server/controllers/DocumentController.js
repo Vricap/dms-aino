@@ -60,6 +60,8 @@ const DocumentController = {
       const offset = Number(req.query.offset) || 0;
       const limit = Number(req.query.limit) || 20;
       const status = req.query.status || "";
+      const div = req.query.div || "";
+      const typ = req.query.typ || "";
 
       const token =
         req.body.token || req.query.token || req.headers["x-access-token"];
@@ -75,6 +77,16 @@ const DocumentController = {
         query.status = { $in: statuses };
       }
 
+      if (div.length > 0) {
+        const division = div.split(",").map((s) => s.trim());
+        query.division = { $in: division };
+      }
+
+      if (typ.length > 0) {
+        const type = typ.split(",").map((s) => s.trim());
+        query.type = { $in: type };
+      }
+
       if (decoded) {
         if (!isAdmin) query.uploader = decoded.id; // if not admin, only show the document they upload themselve
       } else {
@@ -86,8 +98,8 @@ const DocumentController = {
         .populate("uploader", "username roleId")
         .populate("receiver.data.user", "username")
         .sort({ createdAt: -1 })
-        .skip(offset)
-        .limit(limit);
+        .skip(offset);
+      // .limit(limit);
 
       let removed = 0;
 
@@ -130,10 +142,25 @@ const DocumentController = {
       if (!decoded)
         throw new Error("User is unknown! Please login with valid user.");
 
-      const documents = await Document.find({ status: "sent" }).populate(
-        "uploader",
-        "username",
-      );
+      let query = {};
+
+      const div = req.query.div || "";
+      const typ = req.query.typ || "";
+
+      if (div.length > 0) {
+        const division = div.split(",").map((s) => s.trim());
+        query.division = { $in: division };
+      }
+
+      if (typ.length > 0) {
+        const type = typ.split(",").map((s) => s.trim());
+        query.type = { $in: type };
+      }
+
+      const documents = await Document.find({
+        status: "sent",
+        ...query,
+      }).populate("uploader", "username");
 
       let filteredDoc = [];
       for (const obj of documents) {
