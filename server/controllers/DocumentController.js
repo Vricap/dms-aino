@@ -72,7 +72,7 @@ const DocumentController = {
         title: { $regex: searchKey, $options: "i" },
       };
 
-      if (status) {
+      if (status.length > 0) {
         const statuses = status.split(",").map((s) => s.trim()); // e.g status=saved,sent
         query.status = { $in: statuses };
       }
@@ -122,9 +122,17 @@ const DocumentController = {
         throw new Error("File tidak ditemukan");
       }
       const doc = await Document.findById(req.params.id);
+
+      let receiver = {};
+      receiver = doc.receiver.data.find(
+        (x) => x.urutan === doc.receiver.current,
+      );
       if (doc) {
         res.setHeader("Access-Control-Expose-Headers", "X-Meta-Info");
-        res.set("X-Meta-Info", JSON.stringify({ message: doc.receiver }));
+        res.set(
+          "X-Meta-Info",
+          JSON.stringify({ current: doc.receiver.current, receiver: receiver }),
+        );
       }
       res.type("application/pdf");
       res.sendFile(fPath);
