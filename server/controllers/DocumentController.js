@@ -125,7 +125,9 @@ const DocumentController = {
 
       let receiver = {};
       receiver = doc.receiver.data.find(
-        (x) => x.urutan === doc.receiver.current,
+        (x) =>
+          x.urutan === doc.receiver.current &&
+          x.user.toString() === res.locals.decoded.id,
       );
       if (doc) {
         res.setHeader("Access-Control-Expose-Headers", "X-Meta-Info");
@@ -577,7 +579,10 @@ const DocumentController = {
       doc.receiver.data[index].dateSigned = new Date();
       doc.receiver.data[index].signed = true;
       doc.receiver.current++;
-      if (doc.receiver.current > doc.receiver.data.length) {
+      if (
+        doc.receiver.current >
+        doc.receiver.data[doc.receiver.data.length - 1].urutan
+      ) {
         doc.status = "complete";
         doc.dateComplete = new Date();
       }
