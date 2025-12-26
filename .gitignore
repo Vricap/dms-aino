@@ -1,3 +1,7 @@
+notes.txt
+uploads
+build
+
 # Logs
 logs
 *.log
@@ -40,5 +44,3 @@ lib
 reports
 **/*.DS_Store
 .env
-
-notes.txt
