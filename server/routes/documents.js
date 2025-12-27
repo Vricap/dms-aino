@@ -29,11 +29,11 @@ export default (app) => {
     Authenticator.verifyUser,
     DocumentController.getDocumentsInbox,
   );
-  app.get(
-    "/documents/signed",
-    Authenticator.verifyUser,
-    DocumentController.getDocumentsSigned,
-  );
+  // app.get(
+  //   "/documents/signed",
+  //   Authenticator.verifyUser,
+  //   DocumentController.getDocumentsSigned,
+  // );
   app.post(
     "/documents",
     upload.single("file"),

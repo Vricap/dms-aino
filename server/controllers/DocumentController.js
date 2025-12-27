@@ -49,6 +49,20 @@ async function getNextCounter(name) {
   return counter.value;
 }
 
+function getDocumentsSigned(id, docs) {
+  let signed = [];
+  for (const obj of docs) {
+    for (const r of obj.receiver.data) {
+      if (r.user._id.toString() === id && r.signed) {
+        const plain = obj.toObject();
+        plain.dateSigned = r.dateSigned;
+        signed.push(plain);
+      }
+    }
+  }
+  return signed;
+}
+
 const DocumentController = {
   /**
    * Get documents
@@ -62,6 +76,7 @@ const DocumentController = {
       const status = req.query.status || "";
       const div = req.query.div || "";
       const typ = req.query.typ || "";
+      const signed = req.query.signed || "";
 
       const token =
         req.body.token || req.query.token || req.headers["x-access-token"];
@@ -102,6 +117,13 @@ const DocumentController = {
       // .limit(limit);
 
       let removed = 0;
+
+      if (signed === "true") {
+        return res.status(200).send({
+          rows: getDocumentsSigned(decoded.id, documents),
+          metaData: paginate(total - removed, limit, offset),
+        });
+      }
 
       res.status(200).send({
         rows: documents,
@@ -594,26 +616,6 @@ const DocumentController = {
       );
       await doc.save();
       res.status(200).send({ message: "Dokumen berhasil di tanda tangani!" });
-    } catch (err) {
-      handleError(err, res);
-    }
-  },
-  async getDocumentsSigned(req, res) {
-    try {
-      const docs = await Document.find();
-      const id = res.locals.decoded.id;
-      let signed = [];
-
-      for (const obj of docs) {
-        for (const r of obj.receiver.data) {
-          if (r.user.toString() === id && r.signed) {
-            const plain = obj.toObject();
-            plain.dateSigned = r.dateSigned;
-            signed.push(plain);
-          }
-        }
-      }
-      res.status(200).send(signed);
     } catch (err) {
       handleError(err, res);
     }
