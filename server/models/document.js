@@ -98,11 +98,18 @@ const DocumentSchema = new mongoose.Schema(
       required: [true, "Status is required"],
       enum: {
         values: ["saved", "sent", "complete"],
-        message: "Status in invalid",
+        message: "Status is invalid",
       },
     },
     // TODO: maybe we should sub-document this thing
     receiver: {
+      signingMode: {
+        type: String,
+        enum: {
+          values: ["sequential", "parallel"],
+          message: "Signing mode is invalid",
+        },
+      },
       current: {
         // current urutan
         type: Number,

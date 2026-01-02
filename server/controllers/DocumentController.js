@@ -103,7 +103,7 @@ const DocumentController = {
       }
 
       if (decoded) {
-        if (!isAdmin) query.uploader = decoded.id; // if not admin, only show the document they upload themselve
+        if (!isAdmin && signed !== "true") query.uploader = decoded.id; // if not admin, only show the document they upload themselve
       } else {
         throw new Error("User is unknown!");
       }
@@ -148,14 +148,19 @@ const DocumentController = {
       let receiver = {};
       receiver = doc.receiver.data.find(
         (x) =>
-          x.urutan === doc.receiver.current &&
-          x.user.toString() === res.locals.decoded.id,
+          (doc.receiver.signingMode === "sequential"
+            ? x.urutan === doc.receiver.current
+            : true) && x.user.toString() === res.locals.decoded.id,
       );
       if (doc) {
         res.setHeader("Access-Control-Expose-Headers", "X-Meta-Info");
         res.set(
           "X-Meta-Info",
-          JSON.stringify({ current: doc.receiver.current, receiver: receiver }),
+          JSON.stringify({
+            current: doc.receiver.current,
+            receiver: receiver,
+            signingMode: doc.receiver.signingMode,
+          }),
         );
       }
       res.type("application/pdf");
@@ -197,13 +202,24 @@ const DocumentController = {
       let filteredDoc = [];
       for (const obj of documents) {
         obj.receiver.data.forEach((val) => {
-          if (
-            val.urutan === obj.receiver.current &&
-            res.locals.decoded.id === val.user.toString()
-          ) {
-            const plain = obj.toObject(); // have to do this to add new key
-            plain.dateSent = val.dateSent;
-            filteredDoc.push(plain);
+          if (res.locals.decoded.id === val.user.toString()) {
+            if (
+              obj.receiver.signingMode === "sequential" &&
+              val.urutan === obj.receiver.current
+            ) {
+              const plain = obj.toObject(); // have to do this to add new key
+              plain.dateSent = val.dateSent;
+              filteredDoc.push(plain);
+            } else if (obj.receiver.signingMode === "parallel") {
+              const thisUrutanIsSigned = obj.receiver.data.find(
+                (el) => el.urutan === val.urutan && el.signed,
+              );
+              if (!thisUrutanIsSigned) {
+                const plain = obj.toObject(); // have to do this to add new key
+                plain.dateSent = val.dateSent;
+                filteredDoc.push(plain);
+              }
+            }
           }
         });
       }
@@ -288,16 +304,18 @@ const DocumentController = {
           },
         },
       };
-      const inboxQuery = {
-        // ...baseQuery,
-        "receiver.data": {
-          $elemMatch: {
-            user: user._id,
-            signed: false,
-            dateSent: range,
-          },
-        },
-      };
+
+      // const inboxQuery = {
+      //   // ...baseQuery,
+      //   "receiver.data": {
+      //     $elemMatch: {
+      //       user: user._id,
+      //       signed: false,
+      //       dateSent: range,
+      //     },
+      //   },
+      // };
+
       const completeQuery = {
         ...baseQuery,
         status: "complete",
@@ -316,15 +334,45 @@ const DocumentController = {
 
       const uploaded = await Document.countDocuments(uploadedQuery);
       const sended = await Document.countDocuments(sendedQuery);
-      const inbox = await Document.countDocuments(inboxQuery);
+      // const inbox = await Document.countDocuments(inboxQuery);
       const complete = await Document.countDocuments(completeQuery);
       const signed = await Document.countDocuments(signedQuery);
+
+      const documents = await Document.find({
+        status: "sent",
+        "receiver.data": {
+          $elemMatch: {
+            dateSent: range,
+          },
+        },
+      }).populate("uploader", "username");
+
+      let count = 0;
+      for (const obj of documents) {
+        obj.receiver.data.forEach((val) => {
+          if (res.locals.decoded.id === val.user.toString()) {
+            if (
+              obj.receiver.signingMode === "sequential" &&
+              val.urutan === obj.receiver.current
+            ) {
+              count++;
+            } else if (obj.receiver.signingMode === "parallel") {
+              const thisUrutanIsSigned = obj.receiver.data.find(
+                (el) => el.urutan === val.urutan && el.signed,
+              );
+              if (!thisUrutanIsSigned) {
+                count++;
+              }
+            }
+          }
+        });
+      }
 
       res.status(200).send({
         data: {
           uploaded,
           sended,
-          inbox,
+          inbox: count,
           complete,
           signed,
         },
@@ -484,6 +532,7 @@ const DocumentController = {
 
       document.receiver.data = req.body.data;
       document.status = "sent";
+      document.receiver.signingMode = req.body.signingMode;
       await document.save();
       res.status(200).send({ message: "success" });
     } catch (error) {
@@ -576,8 +625,10 @@ const DocumentController = {
       let index = null;
       for (let i = 0; i < doc.receiver.data.length; i++) {
         if (
-          doc.receiver.data[i].user.toString() === res.locals.decoded.id &&
-          doc.receiver.data[i].urutan === doc.receiver.current
+          (doc.receiver.signingMode === "sequential"
+            ? doc.receiver.data[i].urutan === doc.receiver.current
+            : true) &&
+          doc.receiver.data[i].user.toString() === res.locals.decoded.id
         ) {
           index = i;
           break;
