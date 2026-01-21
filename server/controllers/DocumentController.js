@@ -53,10 +53,13 @@ function getDocumentsSigned(id, docs) {
   let signed = [];
   for (const obj of docs) {
     for (const r of obj.receiver.data) {
-      if (r.user._id.toString() === id && r.signed) {
-        const plain = obj.toObject();
-        plain.dateSigned = r.dateSigned;
-        signed.push(plain);
+      // check if user is still exist in the database (not deleted)
+      if (r.user) {
+        if (r.user._id.toString() === id && r.signed) {
+          const plain = obj.toObject();
+          plain.dateSigned = r.dateSigned;
+          signed.push(plain);
+        }
       }
     }
   }
@@ -77,6 +80,7 @@ const DocumentController = {
       const div = req.query.div || "";
       const typ = req.query.typ || "";
       const signed = req.query.signed || "";
+      const list = req.query.list || ""; // retarted
 
       const token =
         req.body.token || req.query.token || req.headers["x-access-token"];
@@ -102,8 +106,10 @@ const DocumentController = {
         query.type = { $in: type };
       }
 
+      if (signed !== "true") query.uploader = decoded.id; // because documents that user has signed is could be from document other user upload
+
       if (decoded) {
-        if (!isAdmin && signed !== "true") query.uploader = decoded.id; // if not admin, only show the document they upload themselve
+        if (isAdmin && list === "true") delete query.uploader; // for "semua dokumen" pages, we actually want all documents regardless who their uploader
       } else {
         throw new Error("User is unknown!");
       }
