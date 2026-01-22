@@ -301,6 +301,15 @@ const DocumentController = {
       }
 
       const uploadedQuery = { ...baseQuery, createdAt: range };
+      const savedQuery = {
+        ...baseQuery,
+        status: "saved",
+        "receiver.data": {
+          $elemMatch: {
+            dateSent: range,
+          },
+        },
+      };
       const sendedQuery = {
         ...baseQuery,
         status: "sent",
@@ -339,6 +348,7 @@ const DocumentController = {
       };
 
       const uploaded = await Document.countDocuments(uploadedQuery);
+      const saved = await Document.countDocuments(savedQuery);
       const sended = await Document.countDocuments(sendedQuery);
       // const inbox = await Document.countDocuments(inboxQuery);
       const complete = await Document.countDocuments(completeQuery);
@@ -377,6 +387,7 @@ const DocumentController = {
       res.status(200).send({
         data: {
           uploaded,
+          saved,
           sended,
           inbox: count,
           complete,
