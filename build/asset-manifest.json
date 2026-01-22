@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "./static/css/main.3bd41d8e.css",
-    "main.js": "./static/js/main.35087982.js",
+    "main.css": "./static/css/main.04ad435c.css",
+    "main.js": "./static/js/main.5aaaa6fd.js",
     "static/media/aino-login.png": "./static/media/aino-login.12496012913387877dfd.png",
     "index.html": "./index.html",
-    "main.3bd41d8e.css.map": "./static/css/main.3bd41d8e.css.map",
-    "main.35087982.js.map": "./static/js/main.35087982.js.map"
+    "main.04ad435c.css.map": "./static/css/main.04ad435c.css.map",
+    "main.5aaaa6fd.js.map": "./static/js/main.5aaaa6fd.js.map"
   },
   "entrypoints": [
-    "static/css/main.3bd41d8e.css",
-    "static/js/main.35087982.js"
+    "static/css/main.04ad435c.css",
+    "static/js/main.5aaaa6fd.js"
   ]
 }
