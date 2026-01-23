@@ -147,7 +147,12 @@ const DocumentController = {
         "../../uploads/documents/" + req.params.id,
       );
       if (!fs.existsSync(fPath)) {
-        throw new Error("File tidak ditemukan");
+        return res
+          .status(404)
+          .send({
+            message:
+              "File dokumen tidak ditemukan di storage. Kemungkinan sudah hilang. Hapus dokumen ini dan mulai dengan upload dokumen baru.",
+          });
       }
       const doc = await Document.findById(req.params.id);
 
@@ -183,7 +188,10 @@ const DocumentController = {
       const decoded = Authenticator.verifyToken(token);
 
       if (!decoded)
-        throw new Error("User is unknown! Please login with valid user.");
+        return res.status(404).send({
+          message:
+            "User tidak diketahui! Tolong login kembali dengan user yang valid.",
+        });
 
       let query = {};
 
