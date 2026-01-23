@@ -304,11 +304,7 @@ const DocumentController = {
       const savedQuery = {
         ...baseQuery,
         status: "saved",
-        "receiver.data": {
-          $elemMatch: {
-            dateSent: range,
-          },
-        },
+        createdAt: range,
       };
       const sendedQuery = {
         ...baseQuery,
