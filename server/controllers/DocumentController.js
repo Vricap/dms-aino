@@ -147,12 +147,10 @@ const DocumentController = {
         "../../uploads/documents/" + req.params.id,
       );
       if (!fs.existsSync(fPath)) {
-        return res
-          .status(404)
-          .send({
-            message:
-              "File dokumen tidak ditemukan di storage. Kemungkinan sudah hilang. Hapus dokumen ini dan mulai dengan upload dokumen baru.",
-          });
+        return res.status(404).send({
+          message:
+            "File dokumen tidak ditemukan di storage. Kemungkinan sudah hilang. Hapus dokumen ini dan mulai dengan upload dokumen baru.",
+        });
       }
       const doc = await Document.findById(req.params.id);
 
@@ -171,6 +169,7 @@ const DocumentController = {
             current: doc.receiver.current,
             receiver: receiver,
             signingMode: doc.receiver.signingMode,
+            doc: doc,
           }),
         );
       }
