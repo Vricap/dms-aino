@@ -16,4 +16,6 @@ Features:
 * Supports Upload, View, Send, Sign, Audit, Download, and Delete document.
 * Digital signing with sign image. drag & drop for signing place.
 * Authorization with RBAC and authentication with JWT.
-* Users managements for Admin.
+* Users managements for Admin.  
+
+![dms-aino-demo](./resource/dms-aino-demo.gif)  
