@@ -18,4 +18,4 @@ Features:
 * Authorization with RBAC and authentication with JWT.
 * Users managements for Admin.  
 
-![dms-aino-demo](./resource/dms-aino-demo.gif)  
+![dms-aino-demo](./resources/dms-aino-demo.gif)  
